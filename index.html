@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Feliz Cumpleaños Tichi!</title>
+    <!-- Fuentes de Google: Fredoka (títulos), Nunito (texto general), Caveat (carta personal) -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Fredoka:wght@400;600&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f4f1ea; /* Alabaster claro (el "otro" fondo) */
+            --text-color: #042e4c; /* Blue Whale para cuerpo de texto */
+            --primary-color: #042e4c; /* Blue Whale para elementos principales */
+            --secondary-color: #b2d3c2; /* Jet Stream para acentos y resaltados */
+            --accent-color: #7bed9f;
+            --card-bg: #ffffff; /* Blanco para tarjetas */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* Canvas para el Confetti */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            min-height: 100vh;
+            padding: 80px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Fredoka', sans-serif;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+        }
+
+        /* SECCIÓN 1: HERO / PORTADA */
+        #hero {
+            text-align: center;
+            background: radial-gradient(circle, #ffffff 0%, var(--bg-color) 70%);
+            position: relative;
+        }
+
+        #hero h1 {
+            font-size: 4rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        #hero .highlight {
+            color: var(--secondary-color);
+            background-color: var(--primary-color);
+            padding: 10px 30px;
+            border-radius: 50px; 
+            font-size: 4.5rem;
+            display: inline-block;
+            margin-top: 10px;
+            box-shadow: 0 10px 25px rgba(4, 46, 76, 0.2);
+        }
+
+        #hero .subtitle {
+            font-size: 1.5rem;
+            color: #556b7d;
+            margin-bottom: 50px;
+        }
+
+        .scroll-down {
+            display: inline-block;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+            animation: bounce 2s infinite;
+            padding: 10px 20px;
+            border-radius: 30px;
+            background-color: rgba(4, 46, 76, 0.1);
+            transition: background-color 0.3s;
+        }
+
+        .scroll-down:hover {
+            background-color: rgba(4, 46, 76, 0.2);
+        }
+
+        /* SECCIÓN 2: GALERÍA DE FOTOS */
+        .grid-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            grid-auto-rows: 250px;
+            grid-auto-flow: dense;
+        }
+
+        .foto-placeholder {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(4, 46, 76, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            background-color: var(--secondary-color); 
+        }
+
+        /* Variamos los tamaños en grid para que quede estilo mosaico/masonry falso */
+        .foto-placeholder:nth-child(2n) { grid-row: span 2; }
+        .foto-placeholder:nth-child(3n) { grid-column: span 2; }
+
+        .foto-placeholder:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
+
+        .foto-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .foto-placeholder:hover img {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 600px) {
+            .foto-placeholder:nth-child(n) {
+                grid-row: span 1;
+                grid-column: span 1;
+            }
+        }
+
+        /* SECCIÓN 3: LÍNEA DE TIEMPO / RECUERDOS */
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background-color: rgba(178, 211, 194, 0.6); /* Jet Stream */
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -2px;
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+            margin-bottom: 30px;
+        }
+
+        .timeline-item:nth-child(odd) { left: 0; }
+        .timeline-item:nth-child(even) { left: 50%; }
+
+        .timeline-dot {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            right: -12px;
+            background-color: var(--secondary-color);
+            border: 4px solid var(--bg-color);
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+            box-shadow: 0 0 0 4px rgba(178, 211, 194, 0.3);
+        }
+
+        .timeline-item:nth-child(even) .timeline-dot { left: -12px; }
+
+        .timeline-content {
+            padding: 25px;
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        
+        .timeline-content:hover {
+            transform: translateY(-5px);
+        }
+
+        .timeline-content h3 {
+            text-align: left;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        @media screen and (max-width: 768px) {
+            .timeline::after { left: 31px; }
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 15px;
+            }
+            .timeline-item:nth-child(even) { left: 0%; }
+            .timeline-dot { left: 19px !important; }
+        }
+
+        /* SECCIÓN 4: CARTA PERSONAL */
+        .carta-container {
+            display: flex;
+            justify-content: center;
+        }
+        .carta {
+            background: #fff;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(4, 46, 76, 0.1);
+            /* Estilo tipo papel rayado o textura suave */
+            background-image: repeating-linear-gradient(white, white 30px, #f4f8f7 30px, #f4f8f7 31px);
+            line-height: 31px;
+            max-width: 700px;
+            width: 100%;
+            position: relative;
+        }
+        
+        /* Cita o pin decorativo en la carta */
+        .carta::before {
+            content: '📌';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+        }
+
+        .texto-carta, .firma {
+            font-family: 'Caveat', cursive;
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+        }
+
+        .firma {
+            text-align: right;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 600px) {
+            .carta { padding: 40px 20px 20px; }
+            .texto-carta { font-size: 1.6rem; line-height: 28px; }
+            .carta { background-image: repeating-linear-gradient(white, white 28px, #f4f8f7 28px, #f4f8f7 29px); }
+        }
+
+        /* SECCIÓN 5: CIERRE Y SORPRESA */
+        .text-center { text-align: center; }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5rem;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(4, 46, 76, 0.4);
+            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            transform: scale(1.05) translateY(-2px);
+            background-color: #032238;
+            box-shadow: 0 12px 25px rgba(4, 46, 76, 0.5);
+        }
+
+        #mensaje-sorpresa {
+            margin-top: 40px;
+            font-size: 2rem;
+            font-family: 'Fredoka', sans-serif;
+            color: var(--primary-color);
+        }
+
+        #mensaje-sorpresa .contador {
+            font-size: 4rem;
+            color: var(--secondary-color); /* Jet stream */
+            background-color: var(--primary-color);
+            padding: 0 20px;
+            border-radius: 15px;
+            display: inline-block;
+            margin: 0 10px;
+            box-shadow: 0 8px 15px rgba(4, 46, 76, 0.2);
+        }
+
+        .small-text {
+            font-size: 1.2rem;
+            color: #556b7d;
+            margin-top: 15px;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .hidden { display: none; opacity: 0; }
+        
+        .visible {
+            display: block;
+            animation: fadeIn 1s forwards;
+        }
+
+        /* ANIMACIONES UTILIDADES */
+        .fade-in-up {
+            opacity: 0;
+            animation: fadeInUp 1s ease-out forwards;
+        }
+        .delay-1 { animation-delay: 0.3s; }
+        .delay-2 { animation-delay: 0.6s; }
+        .delay-3 { animation-delay: 0.9s; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-15px); }
+            60% { transform: translateY(-7px); }
+        }
+
+        /* Scroll Reveal - Intersection Observer */
+        .reveal {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Lona para el efecto de confetti -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- 1. PORTADA -->
+    <header id="hero" class="section">
+        <div class="container">
+            <h1 class="fade-in-up delay-1">¡Feliz Cumpleaños,<br>
+                <!-- REEMPLAZAR NOMBRE AQUÍ -->
+                <span class="highlight">Tichi</span>!
+            </h1>
+            <!-- REEMPLAZAR SUBTÍTULO AQUÍ -->
+            <p class="subtitle fade-in-up delay-2">Que este día sea tan especial como vos.</p>
+            
+            <div class="fade-in-up delay-3" style="margin-top: 2rem;">
+                <a href="#galeria" class="scroll-down">⬇️ Empezar recorrido ⬇️</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. GALERÍA DE FOTOS -->
+    <section id="galeria" class="section reveal">
+        <div class="container">
+            <h2>Mejores Momentos</h2>
+            <div class="grid-gallery">
+                <!-- INSTRUCCIONES PARA FOTOS: 
+                     Reemplazá el enlace 'src="..."' por la ruta de tus fotos. 
+                     Podés usar fotos locales ej: src="fotos/mi-foto.jpg" o enlaces de internet. -->
+                
+                <!-- FOTO 1: [Descripción breve, ej: Viaje a la playa] -->
+                <div class="foto-placeholder">
+                    <img src="alv.png" alt="Recuerdo 1">
+                </div>
+                
+                <!-- FOTO 2: [Descripción breve] -->
+                <div class="foto-placeholder">
+                    <img src="https://images.unsplash.com/photo-1527529482837-4698179dc6ce?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Recuerdo 2">
+                </div>
+                
+                <!-- FOTO 3: [Descripción breve] -->
+                <div class="foto-placeholder">
+                    <img src="https://images.unsplash.com/photo-1511895426328-dc8714191300?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Recuerdo 3">
+                </div>
+                
+                <!-- FOTO 4: [Descripción breve] -->
+                <div class="foto-placeholder">
+                    <img src="https://images.unsplash.com/photo-1478147427282-58a87a120781?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Recuerdo 4">
+                </div>
+                
+                <!-- FOTO 5: [Descripción breve] -->
+                <div class="foto-placeholder">
+                    <img src="https://images.unsplash.com/photo-1543807535-eceef0bc6599?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Recuerdo 5">
+                </div>
+                
+                <!-- FOTO 6: [Descripción breve] -->
+                <div class="foto-placeholder">
+                    <img src="https://images.unsplash.com/photo-1522228115018-d838bcce5c3a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Recuerdo 6">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. LÍNEA DE TIEMPO / RECUERDOS -->
+    <section id="timeline" class="section reveal">
+        <div class="container">
+            <h2>Un Viaje Inolvidable</h2>
+            <div class="timeline">
+                
+                <!-- ANÉCDOTA 1 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <!-- REEMPLAZAR FECHA Y TEXTO -->
+                        <h3>[AÑO 1 / FECHA]</h3>
+                        <p>[ANÉCDOTA 1: Escribí acá un recuerdo divertido o importante. Ej: "El día que nos conocimos y no parábamos de reír por esa pavada..."]</p>
+                    </div>
+                </div>
+                
+                <!-- ANÉCDOTA 2 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <!-- REEMPLAZAR FECHA Y TEXTO -->
+                        <h3>[AÑO 2 / FECHA]</h3>
+                        <p>[ANÉCDOTA 2: Escribí acá otro recuerdo memorable. Ese viaje, esa salida, ese momento especial.]</p>
+                    </div>
+                </div>
+                
+                <!-- ANÉCDOTA 3 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <!-- REEMPLAZAR FECHA Y TEXTO -->
+                        <h3>[AÑO 3 / FECHA]</h3>
+                        <p>[ANÉCDOTA 3: Un momento donde estuvieron juntos en las buenas y en las malas. El aguante incondicional.]</p>
+                    </div>
+                </div>
+                
+                <!-- ANÉCDOTA 4 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <!-- REEMPLAZAR FECHA Y TEXTO -->
+                        <h3>[AÑO 4 / HOY]</h3>
+                        <p>[ANÉCDOTA 4: Una reflexión sobre el presente y lo lindo que es seguir compartiendo la vida.]</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. MENSAJE PERSONAL -->
+    <section id="mensaje" class="section reveal">
+        <div class="container carta-container">
+            <div class="carta">
+                <h2>Para vos</h2>
+                <p class="texto-carta">
+                    <!-- REEMPLAZAR TEXTO DE LA CARTA -->
+                    [MENSAJE PERSONAL: Acá va tu carta. Podés explayarte sobre lo mucho que querés a esta persona, lo que significa su amistad para vos y tus mejores deseos para su nuevo año de vida.<br><br>
+                    Aprovechá para ponerte sentimental, esta sección tiene una tipografía especial que simula escritura a mano para que se sienta bien cercano y escrito con el corazón.<br><br>
+                    Que los cumplas muy feliz.]
+                </p>
+                <!-- REEMPLAZAR FIRMA -->
+                <p class="firma">Con todo nuestro cariño,<br>para bose</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. CIERRE LÚDICO -->
+    <section id="cierre" class="section reveal">
+        <div class="container text-center">
+            <h2>¡Una última cosa!</h2>
+            <button id="btn-sorpresa" class="btn">Tocar para descubrir</button>
+            
+            <div id="mensaje-sorpresa" class="hidden">
+                <p>¡TROLEADO PUTO!</p>
+                <p class="small-text">(te la re comes)</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SCRIPTS MÁGICOS -->
+    <script>
+        // --- 1. CONFIGURACIÓN DEL CONTADOR SORPRESA ---
+        // REEMPLAZAR ESTE NÚMERO POR LOS DÍAS ESTIMADOS DE AMISTAD (o cualquier número que signifique algo)
+        const DIAS_DE_AMISTAD = 1500; 
+
+        // --- 2. LÓGICA DE REVELACIÓN AL HACER SCROLL (Intersection Observer) ---
+        const revealElements = document.querySelectorAll('.reveal');
+        
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target); // Solo animar la primera vez
+                }
+            });
+        }, {
+            root: null,
+            threshold: 0.15, // Se activa cuando el 15% del elemento es visible
+            rootMargin: "0px 0px -50px 0px"
+        });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // --- 3. BOTÓN SORPRESA Y CONTADOR ANIMADO ---
+        const btnSorpresa = document.getElementById('btn-sorpresa');
+        const mensajeSorpresa = document.getElementById('mensaje-sorpresa');
+        const contadorEl = document.getElementById('contador');
+
+        btnSorpresa.addEventListener('click', () => {
+            btnSorpresa.style.display = 'none';
+            mensajeSorpresa.classList.remove('hidden');
+            mensajeSorpresa.classList.add('visible');
+
+            // Animar el contador numérico
+            let currentCount = 0;
+            const duration = 2000; // Duración de la animación en ms
+            const frames = 60; // fps aproximados
+            const step = DIAS_DE_AMISTAD / (duration / (1000 / frames)); 
+
+            const counterInterval = setInterval(() => {
+                currentCount += step;
+                if (currentCount >= DIAS_DE_AMISTAD) {
+                    contadorEl.innerText = DIAS_DE_AMISTAD;
+                    clearInterval(counterInterval);
+                    
+                    // Lluvia de confetti extra al terminar!
+                    tossExtraConfetti();
+                } else {
+                    contadorEl.innerText = Math.floor(currentCount);
+                }
+            }, 1000 / frames);
+        });
+
+
+        // --- 4. SISTEMA DE CONFETTI (Vanilla JS Canvas) ---
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        // Paleta de colores del confetti (hace match con el diseño)
+        const colors = ['#042e4c', '#b2d3c2', '#7bed9f', '#70a1ff', '#1a4365'];
+
+        class Particle {
+            constructor(x, y, extraSpeed = false) {
+                this.x = x;
+                this.y = y;
+                this.r = Math.random() * 6 + 3; // Tamaño
+                this.dx = Math.random() * 4 - 2; // Velocidad X
+                this.dy = Math.random() * 4 + 2 + (extraSpeed ? 3 : 0); // Velocidad Y
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.tilt = Math.random() * 10;
+                this.tiltAngle = 0;
+                this.tiltAngleInc = (Math.random() * 0.07) + 0.05;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.lineWidth = this.r;
+                ctx.strokeStyle = this.color;
+                ctx.moveTo(this.x + this.tilt + this.r, this.y);
+                ctx.lineTo(this.x + this.tilt, this.y + this.tilt + this.r);
+                ctx.stroke();
+            }
+            update() {
+                this.tiltAngle += this.tiltAngleInc;
+                this.y += this.dy;
+                this.x += Math.sin(this.tiltAngle) * 2;
+                this.tilt = Math.sin(this.tiltAngle) * 15;
+                
+                // Reiniciar si cae fuera de pantalla
+                if (this.y > canvas.height) {
+                    this.x = Math.random() * canvas.width;
+                    this.y = -20;
+                }
+                this.draw();
+            }
+        }
+
+        // Crear partículas iniciales
+        function initConfetti(count = 100) {
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle(
+                    Math.random() * canvas.width, 
+                    Math.random() * canvas.height - canvas.height
+                ));
+            }
+        }
+
+        // Bucle de animación
+        function animateConfetti() {
+            requestAnimationFrame(animateConfetti);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => p.update());
+        }
+
+        // Lanzar extra confetti (se usa en el botón sorpresa)
+        function tossExtraConfetti() {
+            for(let i = 0; i < 80; i++) {
+                particles.push(new Particle(
+                    Math.random() * canvas.width, 
+                    -50, 
+                    true // extra speed
+                ));
+            }
+        }
+
+        // Iniciar
+        initConfetti(70); // Confetti base moderado
+        animateConfetti();
+
+        // Ajustar canvas al redimensionar la ventana
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
