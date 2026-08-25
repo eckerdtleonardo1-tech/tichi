@@ -377,6 +377,56 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* -------------------------------------
+           AJUSTES RESPONSIVOS PARA CELULARES
+           ------------------------------------- */
+        @media (max-width: 600px) {
+            .section {
+                padding: 60px 0; /* Menos espacio vertical */
+            }
+            
+            #hero h1 {
+                font-size: 2.5rem;
+                margin-bottom: 10px;
+            }
+
+            #hero .highlight {
+                font-size: 3rem; /* Título más chico para que no desborde */
+                padding: 5px 15px;
+            }
+
+            #hero .subtitle {
+                font-size: 1.2rem;
+                margin-bottom: 30px;
+            }
+
+            h2 {
+                font-size: 2rem;
+                margin-bottom: 30px;
+            }
+
+            .scroll-down {
+                font-size: 1rem;
+                padding: 8px 15px;
+            }
+
+            .btn {
+                font-size: 1.2rem;
+                padding: 12px 30px;
+            }
+
+            #mensaje-sorpresa {
+                font-size: 1.5rem;
+            }
+
+            #mensaje-sorpresa .contador {
+                font-size: 2.5rem; /* Achicar el contador gigante */
+                padding: 0 15px;
+                margin: 15px 0;
+                display: inline-block;
+            }
+        }
     </style>
 </head>
 <body>
