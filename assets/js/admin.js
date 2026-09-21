@@ -75,6 +75,7 @@ function mostrarErrorLogin(mensaje) {
 function mostrarLogin() {
   $('#pantalla-login').classList.remove('oculto');
   $('#pantalla-panel').classList.add('oculto');
+  $('#login-clave').value = '';
 }
 
 async function iniciarSesion(evento) {
@@ -114,7 +115,41 @@ async function cerrarSesion() {
   avisar('Sesión cerrada');
 }
 
+/**
+ * Estar logueado no alcanza: el usuario tiene que estar en la tabla "admins".
+ * Lo comprueba la base con la función es_admin(), así que no se puede falsear
+ * desde el navegador.
+ */
+async function estaHabilitado() {
+  const { data, error } = await sb.rpc('es_admin');
+  if (error) throw error;
+  return data === true;
+}
+
 async function entrarAlPanel(usuario) {
+  let habilitado;
+  try {
+    habilitado = await estaHabilitado();
+  } catch (error) {
+    mostrarLogin();
+    mostrarErrorLogin(
+      `No pudimos verificar el permiso de administrador (${mensajeDeError(error)}). ` +
+      'Revisá que hayas ejecutado el paso 8 de supabase/schema.sql.'
+    );
+    await sb.auth.signOut();
+    return;
+  }
+
+  if (!habilitado) {
+    mostrarLogin();
+    mostrarErrorLogin(
+      `La cuenta ${usuario?.email ?? ''} existe pero no está habilitada para administrar ` +
+      'el catálogo. Agregala a la tabla "admins" (paso 8 de supabase/schema.sql).'
+    );
+    await sb.auth.signOut();
+    return;
+  }
+
   $('#pantalla-login').classList.add('oculto');
   $('#pantalla-panel').classList.remove('oculto');
   $('#usuario-actual').textContent = usuario?.email ?? '';

@@ -52,8 +52,10 @@ Eso crea:
 - Tabla `categorias` (id, nombre, orden, fecha_creacion)
 - Tabla `productos` (id, nombre, categoria, precio, precio_anterior, descripcion,
   imagenes, variantes, stock, etiqueta, destacado, activo, fecha_creacion)
+- Tabla `admins` con la lista de usuarios habilitados, y la función `es_admin()`.
 - Las políticas de **Row Level Security**: el público sólo **lee** los productos con
-  `activo = true`; crear, editar y borrar requiere estar logueado como admin.
+  `activo = true`; crear, editar y borrar requiere estar logueado **y estar en la
+  tabla `admins`** (estar logueado no alcanza).
 - El bucket de Storage **`productos`** para las fotos, público para lectura y
   escribible sólo por el admin logueado.
 - 4 categorías y **12 productos de ejemplo** (3 por categoría).
@@ -62,16 +64,45 @@ El script se puede volver a ejecutar cuando quieras: las tablas y las políticas
 recrean sin romper nada, y **los 12 productos de ejemplo se cargan sólo si la tabla
 está vacía**, así que no te va a duplicar tu catálogo real.
 
-### 3. Crear tu usuario admin
+### 3. Crear el usuario admin y habilitarlo
 
-No hay registro público a propósito: el usuario lo creás vos.
+Son **dos pasos**, y si te salteás el segundo el panel deja entrar pero no guarda nada.
+
+**3.a — Crear el usuario**
 
 1. Supabase → **Authentication → Users → Add user → Create new user**.
-2. Poné tu email y una contraseña.
+2. Poné el email y la contraseña de quien va a administrar la tienda.
 3. Activá **Auto Confirm User** (si no, el usuario queda sin confirmar y no puede entrar).
 
-> Cualquier usuario que exista en Authentication puede administrar el catálogo.
-> No crees usuarios que no sean tuyos.
+**3.b — Habilitarlo como administrador**
+
+Andá al **SQL Editor**, pegá esto con el email del paso anterior y ejecutalo:
+
+```sql
+insert into public.admins (user_id, email)
+select id, email from auth.users
+where email = 'el-email-del-admin@ejemplo.com'
+on conflict (user_id) do nothing;
+```
+
+Comprobalo con `select email from public.admins;` — tiene que devolver una fila.
+
+**3.c — Cerrar el registro público**
+
+Supabase trae el registro por email **abierto de fábrica**. Desactivalo en
+**Authentication → Sign In / Providers → Email → "Allow new users to sign up"**.
+
+> **Por qué importan 3.b y 3.c:** la clave `anon` es pública, así que sin estas dos
+> cosas cualquiera podría registrarse con ella, confirmar su propio mail y quedar
+> logueado. La tabla `admins` es la que realmente te protege: aunque dejes el
+> registro abierto, una cuenta que no esté en esa lista no puede crear, editar ni
+> borrar nada, ni subir fotos. Las dos medidas juntas son la configuración correcta.
+
+Para quitarle el acceso a alguien más adelante:
+
+```sql
+delete from public.admins where email = 'el-email@ejemplo.com';
+```
 
 ### 4. Conectar el sitio
 
@@ -138,9 +169,34 @@ Y el `<link rel="canonical">` unas líneas más abajo.
 
 ---
 
+## Si se lo vendés a alguien
+
+La tienda está pensada para que el dueño la maneje sin tocar código: carga los
+productos desde el panel y los cambios se ven en el momento. Igual hay tres
+decisiones que conviene resolver **antes** de entregarla.
+
+**Las cuentas tienen que ser del cliente.** Si el proyecto de Supabase y el de
+Vercel quedan a tu nombre, cada cambio de contraseña, cada factura y cada
+problema pasa por vos para siempre. Lo más limpio es crear los dos proyectos con
+el mail del cliente desde el principio, o transferirlos: Supabase permite mover un
+proyecto a otra organización, y Vercel transferir el proyecto.
+
+**El plan gratuito de Supabase pausa los proyectos sin tráfico.** Si la tienda
+pasa alrededor de una semana sin visitas, el proyecto se pausa y hay que
+reactivarlo a mano desde el panel de Supabase — mientras está pausado, la tienda
+no carga productos. Con una tienda que recibe visitas seguido no pasa, pero si
+arranca despacio te lo vas a cruzar, y es incómodo que le pase a un cliente que
+pagó. Verificá las condiciones y los precios actuales en la página de Supabase
+antes de prometer nada, porque estas políticas cambian.
+
+**El cliente va a olvidarse la contraseña.** Hoy el panel no tiene "olvidé mi
+contraseña": si pasa, se la cambiás vos desde Supabase en
+**Authentication → Users → (el usuario) → Reset password**. Si preferís que se
+arregle solo, hay que agregarle la recuperación por mail al panel.
+
 ## Cómo se usa
 
-### El cliente
+### El comprador
 
 1. Entra, busca o filtra por categoría, ordena por precio o novedades.
 2. Toca un producto para ver las fotos, la descripción y elegir variante y cantidad.
@@ -160,9 +216,9 @@ Entrega: Envío a Belgrano 123, San Antonio de Areco
 Si un producto está **sin stock**, en lugar de "Agregar" muestra
 **"Consultar por WhatsApp"** con un mensaje específico de ese producto.
 
-### Vos, en `/admin`
+### El dueño de la tienda, en `/admin`
 
-- **Entrar** con tu email y contraseña. La sesión queda guardada en el celular.
+- **Entrar** con el email y la contraseña. La sesión queda guardada en el celular.
 - **Listado** con buscador, filtro por categoría, miniatura y métricas arriba.
 - **Botones rápidos** en cada producto, sin entrar a editar:
   - `Visible / Oculto` — lo saca o lo pone en la tienda
