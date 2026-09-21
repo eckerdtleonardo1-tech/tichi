@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="robots" content="noindex, nofollow">
+
+<title>Panel · productosimportadossl</title>
+<meta name="description" content="Panel de administración del catálogo.">
+
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+<body class="admin">
+
+<!-- ======================= LOGIN ======================= -->
+<section class="login" id="pantalla-login">
+  <div class="login__caja">
+    <div class="login__marca">
+      <span class="logo__marca" aria-hidden="true">p</span>
+      productosimportadossl
+    </div>
+
+    <h1>Panel de administración</h1>
+    <p class="login__sub">Entrá con tu email y contraseña para gestionar el catálogo.</p>
+
+    <div class="login__error oculto" id="login-error" role="alert"></div>
+
+    <form id="form-login" novalidate>
+      <div class="campo">
+        <label class="campo__etiqueta" for="login-email">Email</label>
+        <input class="entrada" id="login-email" type="email" autocomplete="username"
+               inputmode="email" required placeholder="tu@email.com">
+      </div>
+      <div class="campo">
+        <label class="campo__etiqueta" for="login-clave">Contraseña</label>
+        <input class="entrada" id="login-clave" type="password" autocomplete="current-password"
+               required placeholder="••••••••">
+      </div>
+      <button class="btn btn--principal btn--bloque btn--grande" type="submit" id="login-btn">
+        Entrar
+      </button>
+    </form>
+
+    <p class="login__pie">
+      No hay registro público: el usuario se crea desde Supabase.<br>
+      <a href="../">Volver a la tienda</a>
+    </p>
+  </div>
+</section>
+
+<!-- ======================= PANEL ======================= -->
+<div class="oculto" id="pantalla-panel">
+
+  <header class="panel-header">
+    <div class="contenedor">
+      <div class="panel-header__fila">
+        <div class="panel-header__marca">
+          <span class="logo__marca" aria-hidden="true">p</span>
+          <span class="texto">Panel</span>
+        </div>
+        <span class="panel-header__usuario" id="usuario-actual"></span>
+        <a class="btn btn--secundario btn--chico" href="../" target="_blank" rel="noopener">Ver tienda</a>
+        <button class="btn btn--fantasma btn--chico" id="btn-salir">Salir</button>
+      </div>
+
+      <nav class="pestanias" role="tablist" aria-label="Secciones del panel">
+        <button class="pestania" role="tab" data-vista="productos" aria-selected="true">Productos</button>
+        <button class="pestania" role="tab" data-vista="categorias" aria-selected="false">Categorías</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ---------- Vista: productos ---------- -->
+  <main class="panel" id="vista-productos">
+    <div class="contenedor">
+
+      <div class="metricas" id="metricas"></div>
+
+      <div class="panel__cabecera">
+        <div>
+          <h1>Productos</h1>
+          <p id="conteo-productos">—</p>
+        </div>
+        <button class="btn btn--principal" id="btn-nuevo">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+          Nuevo producto
+        </button>
+      </div>
+
+      <div class="filtros-admin">
+        <input class="entrada" id="admin-buscador" type="search" placeholder="Buscar por nombre, categoría o etiqueta…" autocomplete="off">
+        <select class="entrada" id="admin-categoria">
+          <option value="todas">Todas las categorías</option>
+        </select>
+      </div>
+
+      <div class="lista-admin" id="lista-productos" aria-live="polite"></div>
+    </div>
+  </main>
+
+  <!-- ---------- Vista: categorías ---------- -->
+  <main class="panel oculto" id="vista-categorias">
+    <div class="contenedor">
+      <div class="panel__cabecera">
+        <div>
+          <h1>Categorías</h1>
+          <p>Las categorías se muestran en la tienda en este orden.</p>
+        </div>
+      </div>
+
+      <div class="tarjeta-panel">
+        <form class="forma-categoria" id="form-categoria">
+          <input class="entrada" id="categoria-nueva" type="text" placeholder="Nombre de la categoría" required>
+          <button class="btn btn--principal" type="submit">Agregar</button>
+        </form>
+        <div class="categorias-lista" id="lista-categorias" aria-live="polite"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ======================= HOJA: FORMULARIO DE PRODUCTO ======================= -->
+<div class="fondo-panel" id="fondo-panel"></div>
+
+<section class="hoja" id="hoja-producto" role="dialog" aria-modal="true" aria-labelledby="hoja-titulo" aria-hidden="true">
+  <div class="hoja__cabecera">
+    <h2 id="hoja-titulo">Nuevo producto</h2>
+    <button class="btn btn--fantasma" id="cerrar-hoja" aria-label="Cerrar">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+    </button>
+  </div>
+
+  <form class="hoja__cuerpo" id="form-producto" novalidate>
+    <div class="campo">
+      <label class="campo__etiqueta" for="p-nombre">Nombre *</label>
+      <input class="entrada" id="p-nombre" type="text" required placeholder="Ej: Funda silicona premium">
+    </div>
+
+    <div class="campo">
+      <label class="campo__etiqueta" for="p-categoria">Categoría *</label>
+      <select class="entrada" id="p-categoria" required></select>
+      <span class="campo__ayuda">Las categorías se administran en la pestaña "Categorías".</span>
+    </div>
+
+    <div class="fila-doble">
+      <div class="campo">
+        <label class="campo__etiqueta" for="p-precio">Precio (ARS) *</label>
+        <input class="entrada" id="p-precio" type="number" min="0" step="1" required
+               inputmode="numeric" placeholder="12500">
+      </div>
+      <div class="campo">
+        <label class="campo__etiqueta" for="p-precio-anterior">Precio anterior</label>
+        <input class="entrada" id="p-precio-anterior" type="number" min="0" step="1"
+               inputmode="numeric" placeholder="Opcional">
+      </div>
+    </div>
+
+    <div class="campo">
+      <label class="campo__etiqueta" for="p-descripcion">Descripción</label>
+      <textarea class="entrada" id="p-descripcion" rows="4"
+                placeholder="Contá qué incluye, materiales, medidas…"></textarea>
+    </div>
+
+    <div class="campo">
+      <span class="campo__etiqueta">Fotos</span>
+      <div class="fotos" id="p-fotos"></div>
+      <input type="file" id="p-archivo" accept="image/*" multiple class="oculto">
+      <span class="campo__ayuda">La primera foto es la que se ve en el catálogo. Podés subir varias desde el celular.</span>
+    </div>
+
+    <div class="campo">
+      <label class="campo__etiqueta" for="p-variantes">Variantes</label>
+      <input class="entrada" id="p-variantes" type="text"
+             placeholder="iPhone 15, iPhone 14, Samsung A54">
+      <span class="campo__ayuda">Separalas con comas. Ej: modelos de celular, ml de perfume, colores.</span>
+    </div>
+
+    <div class="campo">
+      <label class="campo__etiqueta" for="p-etiqueta">Etiqueta</label>
+      <select class="entrada" id="p-etiqueta">
+        <option value="">Sin etiqueta</option>
+        <option value="Importado">Importado</option>
+        <option value="Nuevo">Nuevo</option>
+        <option value="Oferta">Oferta</option>
+        <option value="Más vendido">Más vendido</option>
+      </select>
+    </div>
+
+    <div class="grupo-interruptores">
+      <label class="interruptor"><input type="checkbox" id="p-stock" checked> Hay stock</label>
+      <label class="interruptor"><input type="checkbox" id="p-activo" checked> Visible</label>
+      <label class="interruptor"><input type="checkbox" id="p-destacado"> Destacado</label>
+    </div>
+  </form>
+
+  <div class="hoja__pie">
+    <button class="btn btn--secundario" id="hoja-cancelar" type="button">Cancelar</button>
+    <button class="btn btn--principal" id="hoja-guardar" type="button">Guardar</button>
+  </div>
+</section>
+
+<!-- ======================= CONFIRMAR BORRADO ======================= -->
+<div class="confirmar" id="confirmar" role="dialog" aria-modal="true" aria-labelledby="confirmar-titulo" aria-hidden="true">
+  <h3 id="confirmar-titulo">¿Borrar producto?</h3>
+  <p id="confirmar-texto">Esta acción no se puede deshacer.</p>
+  <div class="confirmar__acciones">
+    <button class="btn btn--secundario" id="confirmar-no" type="button">Cancelar</button>
+    <button class="btn btn--peligro" id="confirmar-si" type="button">Borrar</button>
+  </div>
+</div>
+
+<script type="module" src="../assets/js/admin.js"></script>
+</body>
+</html>

@@ -1,741 +1,271 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>¡Feliz Cumpleaños Tichi!</title>
-    <!-- Fuentes de Google: Fredoka (títulos), Nunito (texto general), Caveat (carta personal) -->
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Fredoka:wght@400;600&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #f4f1ea; /* Alabaster claro (el "otro" fondo) */
-            --text-color: #042e4c; /* Blue Whale para cuerpo de texto */
-            --primary-color: #042e4c; /* Blue Whale para elementos principales */
-            --secondary-color: #b2d3c2; /* Jet Stream para acentos y resaltados */
-            --accent-color: #7bed9f;
-            --card-bg: #ffffff; /* Blanco para tarjetas */
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111827">
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<title>productosimportadossl · Importados, perfumes, fundas y auriculares</title>
+<meta name="description" content="Catálogo de productos importados: fundas de celular, perfumes, auriculares y más. Armá tu pedido y cerralo por WhatsApp. Envíos a todo el país.">
 
-        html {
-            scroll-behavior: smooth;
-        }
+<!-- Para que el link se vea bien al compartirlo en WhatsApp e Instagram -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="productosimportadossl">
+<meta property="og:title" content="productosimportadossl · Importados con envío a todo el país">
+<meta property="og:description" content="Fundas de celular, perfumes, auriculares y productos importados. Armá tu pedido y cerralo por WhatsApp.">
+<!-- IMPORTANTE: og:image tiene que ser una URL ABSOLUTA para que WhatsApp e
+     Instagram la puedan leer. Cambiá este dominio por el de tu sitio en Vercel. -->
+<meta property="og:url" content="https://productosimportadossl.vercel.app/">
+<meta property="og:image" content="https://productosimportadossl.vercel.app/assets/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="productosimportadossl — catálogo de productos importados">
+<meta property="og:locale" content="es_AR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="productosimportadossl · Importados con envío a todo el país">
+<meta name="twitter:description" content="Fundas de celular, perfumes, auriculares y productos importados. Pedidos por WhatsApp.">
+<meta name="twitter:image" content="https://productosimportadossl.vercel.app/assets/img/og.png">
 
-        body {
-            font-family: 'Nunito', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            overflow-x: hidden;
-        }
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/favicon.svg">
+<link rel="canonical" href="https://productosimportadossl.vercel.app/">
 
-        /* Canvas para el Confetti */
-        #confetti-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9999;
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .section {
-            min-height: 100vh;
-            padding: 80px 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        h1, h2, h3 {
-            font-family: 'Fredoka', sans-serif;
-            color: var(--primary-color);
-            text-align: center;
-        }
-
-        h2 {
-            font-size: 2.5rem;
-            margin-bottom: 40px;
-        }
-
-        /* SECCIÓN 1: HERO / PORTADA */
-        #hero {
-            text-align: center;
-            background: radial-gradient(circle, #ffffff 0%, var(--bg-color) 70%);
-            position: relative;
-        }
-
-        #hero h1 {
-            font-size: 4rem;
-            line-height: 1.2;
-            margin-bottom: 20px;
-        }
-
-        #hero .highlight {
-            color: var(--secondary-color);
-            background-color: var(--primary-color);
-            padding: 10px 30px;
-            border-radius: 50px; 
-            font-size: 4.5rem;
-            display: inline-block;
-            margin-top: 10px;
-            box-shadow: 0 10px 25px rgba(4, 46, 76, 0.2);
-        }
-
-        #hero .subtitle {
-            font-size: 1.5rem;
-            color: #556b7d;
-            margin-bottom: 50px;
-        }
-
-        .scroll-down {
-            display: inline-block;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            text-decoration: none;
-            animation: bounce 2s infinite;
-            padding: 10px 20px;
-            border-radius: 30px;
-            background-color: rgba(4, 46, 76, 0.1);
-            transition: background-color 0.3s;
-        }
-
-        .scroll-down:hover {
-            background-color: rgba(4, 46, 76, 0.2);
-        }
-
-        /* SECCIÓN 2: GALERÍA DE FOTOS */
-        .grid-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            grid-auto-rows: 250px;
-            grid-auto-flow: dense;
-        }
-
-        .foto-placeholder {
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(4, 46, 76, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-            background-color: var(--secondary-color); 
-        }
-
-        /* Variamos los tamaños en grid para que quede estilo mosaico/masonry falso */
-        .foto-placeholder:nth-child(2n) { grid-row: span 2; }
-        .foto-placeholder:nth-child(3n) { grid-column: span 2; }
-
-        .foto-placeholder:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
-            z-index: 10;
-        }
-
-        .foto-placeholder img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-        
-        .foto-placeholder:hover img {
-            transform: scale(1.1);
-        }
-
-        @media (max-width: 600px) {
-            .foto-placeholder:nth-child(n) {
-                grid-row: span 1;
-                grid-column: span 1;
-            }
-        }
-
-        /* SECCIÓN 3: LÍNEA DE TIEMPO / RECUERDOS */
-        .timeline {
-            position: relative;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .timeline::after {
-            content: '';
-            position: absolute;
-            width: 4px;
-            background-color: rgba(178, 211, 194, 0.6); /* Jet Stream */
-            top: 0;
-            bottom: 0;
-            left: 50%;
-            margin-left: -2px;
-            border-radius: 2px;
-        }
-
-        .timeline-item {
-            padding: 10px 40px;
-            position: relative;
-            background-color: inherit;
-            width: 50%;
-            margin-bottom: 30px;
-        }
-
-        .timeline-item:nth-child(odd) { left: 0; }
-        .timeline-item:nth-child(even) { left: 50%; }
-
-        .timeline-dot {
-            position: absolute;
-            width: 24px;
-            height: 24px;
-            right: -12px;
-            background-color: var(--secondary-color);
-            border: 4px solid var(--bg-color);
-            top: 15px;
-            border-radius: 50%;
-            z-index: 1;
-            box-shadow: 0 0 0 4px rgba(178, 211, 194, 0.3);
-        }
-
-        .timeline-item:nth-child(even) .timeline-dot { left: -12px; }
-
-        .timeline-content {
-            padding: 25px;
-            background-color: var(--card-bg);
-            border-radius: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-            position: relative;
-            transition: transform 0.3s ease;
-        }
-        
-        .timeline-content:hover {
-            transform: translateY(-5px);
-        }
-
-        .timeline-content h3 {
-            text-align: left;
-            font-size: 1.4rem;
-            margin-bottom: 10px;
-            color: var(--primary-color);
-        }
-
-        @media screen and (max-width: 768px) {
-            .timeline::after { left: 31px; }
-            .timeline-item {
-                width: 100%;
-                padding-left: 70px;
-                padding-right: 15px;
-            }
-            .timeline-item:nth-child(even) { left: 0%; }
-            .timeline-dot { left: 19px !important; }
-        }
-
-        /* SECCIÓN 4: CARTA PERSONAL */
-        .carta-container {
-            display: flex;
-            justify-content: center;
-        }
-        .carta {
-            background: #fff;
-            padding: 50px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(4, 46, 76, 0.1);
-            /* Estilo tipo papel rayado o textura suave */
-            background-image: repeating-linear-gradient(white, white 30px, #f4f8f7 30px, #f4f8f7 31px);
-            line-height: 31px;
-            max-width: 700px;
-            width: 100%;
-            position: relative;
-        }
-        
-        /* Cita o pin decorativo en la carta */
-        .carta::before {
-            content: '📌';
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 2rem;
-        }
-
-        .texto-carta, .firma {
-            font-family: 'Caveat', cursive;
-            font-size: 2rem;
-            color: var(--primary-color);
-            margin-bottom: 25px;
-        }
-
-        .firma {
-            text-align: right;
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-top: 40px;
-        }
-
-        @media (max-width: 600px) {
-            .carta { padding: 40px 20px 20px; }
-            .texto-carta { font-size: 1.6rem; line-height: 28px; }
-            .carta { background-image: repeating-linear-gradient(white, white 28px, #f4f8f7 28px, #f4f8f7 29px); }
-        }
-
-        /* SECCIÓN 5: CIERRE Y SORPRESA */
-        .text-center { text-align: center; }
-
-        .btn {
-            background-color: var(--primary-color);
-            color: white;
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1.5rem;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 8px 20px rgba(4, 46, 76, 0.4);
-            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
-            margin-top: 20px;
-        }
-
-        .btn:hover {
-            transform: scale(1.05) translateY(-2px);
-            background-color: #032238;
-            box-shadow: 0 12px 25px rgba(4, 46, 76, 0.5);
-        }
-
-        #mensaje-sorpresa {
-            margin-top: 40px;
-            font-size: 2rem;
-            font-family: 'Fredoka', sans-serif;
-            color: var(--primary-color);
-        }
-
-        #mensaje-sorpresa .contador {
-            font-size: 4rem;
-            color: var(--secondary-color); /* Jet stream */
-            background-color: var(--primary-color);
-            padding: 0 20px;
-            border-radius: 15px;
-            display: inline-block;
-            margin: 0 10px;
-            box-shadow: 0 8px 15px rgba(4, 46, 76, 0.2);
-        }
-
-        .small-text {
-            font-size: 1.2rem;
-            color: #556b7d;
-            margin-top: 15px;
-            font-family: 'Nunito', sans-serif;
-        }
-
-        .hidden { display: none; opacity: 0; }
-        
-        .visible {
-            display: block;
-            animation: fadeIn 1s forwards;
-        }
-
-        /* ANIMACIONES UTILIDADES */
-        .fade-in-up {
-            opacity: 0;
-            animation: fadeInUp 1s ease-out forwards;
-        }
-        .delay-1 { animation-delay: 0.3s; }
-        .delay-2 { animation-delay: 0.6s; }
-        .delay-3 { animation-delay: 0.9s; }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-15px); }
-            60% { transform: translateY(-7px); }
-        }
-
-        /* Scroll Reveal - Intersection Observer */
-        .reveal {
-            opacity: 0;
-            transform: translateY(60px);
-            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
-        }
-
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* -------------------------------------
-           AJUSTES RESPONSIVOS PARA CELULARES
-           ------------------------------------- */
-        @media (max-width: 600px) {
-            .section {
-                padding: 60px 0; /* Menos espacio vertical */
-            }
-            
-            #hero h1 {
-                font-size: 2.5rem;
-                margin-bottom: 10px;
-            }
-
-            #hero .highlight {
-                font-size: 3rem; /* Título más chico para que no desborde */
-                padding: 5px 15px;
-            }
-
-            #hero .subtitle {
-                font-size: 1.2rem;
-                margin-bottom: 30px;
-            }
-
-            h2 {
-                font-size: 2rem;
-                margin-bottom: 30px;
-            }
-
-            .scroll-down {
-                font-size: 1rem;
-                padding: 8px 15px;
-            }
-
-            .btn {
-                font-size: 1.2rem;
-                padding: 12px 30px;
-            }
-
-            #mensaje-sorpresa {
-                font-size: 1.5rem;
-            }
-
-            #mensaje-sorpresa .contador {
-                font-size: 2.5rem; /* Achicar el contador gigante */
-                padding: 0 15px;
-                margin: 15px 0;
-                display: inline-block;
-            }
-        }
-    </style>
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/tienda.css">
 </head>
 <body>
-    <!-- Lona para el efecto de confetti -->
-    <canvas id="confetti-canvas"></canvas>
 
-    <!-- 1. PORTADA -->
-    <header id="hero" class="section">
-        <div class="container">
-            <h1 class="fade-in-up delay-1">¡Feliz Cumpleaños,<br>
-                <!-- REEMPLAZAR NOMBRE AQUÍ -->
-                <span class="highlight">Tichi</span>!
-            </h1>
-            <!-- REEMPLAZAR SUBTÍTULO AQUÍ -->
-            <p class="subtitle fade-in-up delay-2">Que este día sea tan especial como vos.</p>
-            
-            <div class="fade-in-up delay-3" style="margin-top: 2rem;">
-                <a href="#galeria" class="scroll-down">⬇️ Empezar recorrido ⬇️</a>
-            </div>
+<!-- ======================= HEADER FIJO ======================= -->
+<header class="header">
+  <div class="contenedor header__interior">
+    <a href="#inicio" class="logo" aria-label="productosimportadossl, ir al inicio">
+      <span class="logo__marca" aria-hidden="true">p</span>
+      <span class="logo__texto">productosimportadossl</span>
+    </a>
+
+    <form class="header__buscador" role="search" onsubmit="return false">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path>
+      </svg>
+      <label class="solo-lectores" for="buscador">Buscar productos</label>
+      <input class="entrada" id="buscador" type="search" placeholder="Buscar productos…" autocomplete="off">
+    </form>
+
+    <button class="btn-carrito" id="abrir-carrito" aria-label="Abrir el carrito">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M6 2 4 6v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6l-2-4z"></path>
+        <path d="M4 6h16"></path><path d="M16 10a4 4 0 0 1-8 0"></path>
+      </svg>
+      <span class="btn-carrito__contador" id="contador-carrito" aria-live="polite">0</span>
+    </button>
+  </div>
+</header>
+
+<!-- Sólo aparece si todavía no pusiste las credenciales de Supabase -->
+<div class="aviso-config" id="aviso-config" hidden>
+  Estás viendo <strong>productos de ejemplo</strong>. Para usar tus productos reales, completá
+  <code>assets/js/config.js</code> con los datos de tu proyecto de Supabase.
+</div>
+
+<main id="inicio">
+
+  <!-- ======================= HERO ======================= -->
+  <section class="hero">
+    <div class="contenedor">
+      <p class="hero__pildora"><span class="punto"></span> Pedidos por WhatsApp · Respuesta rápida</p>
+      <h1>Importados que buscás,<br><em>al precio que te conviene</em></h1>
+      <p class="hero__sub">
+        Fundas de celular, perfumes, auriculares y más. Elegí lo que quieras, armá tu pedido
+        y lo cerramos por WhatsApp en un minuto.
+      </p>
+      <div class="hero__acciones">
+        <a class="btn btn--principal btn--grande" href="#catalogo">Ver catálogo</a>
+        <a class="btn btn--whatsapp btn--grande" id="hero-whatsapp" href="#" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.97L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.13c-.25.7-1.44 1.33-1.98 1.38-.54.06-1.04.26-3.52-.72-2.99-1.18-4.87-4.27-5.02-4.47-.14-.2-1.19-1.59-1.19-3.03 0-1.44.75-2.15 1.02-2.44.27-.3.59-.37.79-.37s.39 0 .56.01c.18.01.42-.07.65.5.24.58.81 1.99.88 2.13.07.14.12.31.02.5-.1.2-.15.32-.3.5-.15.17-.31.39-.45.52-.14.14-.29.3-.12.58.17.29.75 1.24 1.61 2.01 1.11.99 2.04 1.3 2.33 1.44.29.15.46.12.63-.07.17-.2.73-.85.93-1.14.2-.29.39-.24.66-.14.27.1 1.68.79 1.97.94.29.14.48.22.55.34.07.12.07.7-.18 1.4Z"/>
+          </svg>
+          Escribinos
+        </a>
+      </div>
+      <ul class="hero__datos">
+        <li>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 17h4V5H2v12h3"></path><path d="M20 17h2v-4l-3-4h-5v8h3"></path><circle cx="7.5" cy="17.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
+          <span id="dato-envio">Envíos a todo el país</span>
+        </li>
+        <li>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+          <span id="dato-retiro">Retiro sin cargo</span>
+        </li>
+        <li>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+          <span id="dato-horarios">Lunes a sábados de 9 a 20 h</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ======================= CATÁLOGO ======================= -->
+  <section class="catalogo" id="catalogo">
+    <div class="contenedor">
+
+      <div class="barra-filtros">
+        <div class="chips" id="chips" role="group" aria-label="Filtrar por categoría"></div>
+        <div class="barra-filtros__fila">
+          <p class="barra-filtros__resumen" id="resumen" aria-live="polite"></p>
+          <div class="orden">
+            <label for="orden">Ordenar</label>
+            <select class="entrada" id="orden">
+              <option value="novedades">Novedades</option>
+              <option value="precio-asc">Precio: menor a mayor</option>
+              <option value="precio-desc">Precio: mayor a menor</option>
+            </select>
+          </div>
         </div>
-    </header>
+      </div>
 
-    <!-- 2. GALERÍA DE FOTOS -->
-    <section id="galeria" class="section reveal">
-        <div class="container">
-            <h2>Mejores Momentos</h2>
-            <div class="grid-gallery">
-                <!-- INSTRUCCIONES PARA FOTOS: 
-                     Reemplazá el enlace 'src="..."' por la ruta de tus fotos. 
-                     Podés usar fotos locales ej: src="fotos/mi-foto.jpg" o enlaces de internet. -->
-                
-                <!-- FOTO 1: [Descripción breve, ej: Viaje a la playa] -->
-                <div class="foto-placeholder">
-                    <img src="tichi1.jpeg" alt="Recuerdo 1">
-                </div>
-                
-                <!-- FOTO 2: [Descripción breve] -->
-                <div class="foto-placeholder">
-                    <img src="tichi2.jpeg" alt="Recuerdo 2">
-                </div>
-                
-                <!-- FOTO 3: [Descripción breve] -->
-                <div class="foto-placeholder">
-                    <img src="tichi3.jpeg" alt="Recuerdo 3">
-                </div>
-                
-                <!-- FOTO 4: [Descripción breve] -->
-                <div class="foto-placeholder">
-                    <img src="tichi4.jpeg" alt="Recuerdo 4">
-                </div>
-                
-                <!-- FOTO 5: [Descripción breve] -->
-                <div class="foto-placeholder">
-                    <img src="tichi5.jpeg" alt="Recuerdo 5">
-                </div>
-                
-                <!-- FOTO 6: [Descripción breve] -->
-                <div class="foto-placeholder">
-                    <img src="tichi6.jpeg" alt="Recuerdo 6">
-                </div>
+      <div class="grilla" id="grilla" aria-live="polite"></div>
+    </div>
+  </section>
 
-                <div class="foto-placeholder">
-                    <img src="tichi7.jpeg" alt="Recuerdo 7">
-                </div>
+  <!-- ======================= CÓMO COMPRAR ======================= -->
+  <section class="seccion seccion--blanca" id="como-comprar">
+    <div class="contenedor">
+      <h2 class="seccion__titulo">Cómo comprar</h2>
+      <p class="seccion__sub">Tres pasos y listo. No hace falta registrarse ni pagar online.</p>
+      <div class="pasos">
+        <article class="paso aparece">
+          <div class="paso__numero">1</div>
+          <h3>Elegí tus productos</h3>
+          <p>Navegá el catálogo, mirá las fotos y agregá al carrito lo que te guste. Si tiene variantes, elegí modelo, color o tamaño.</p>
+        </article>
+        <article class="paso aparece">
+          <div class="paso__numero">2</div>
+          <h3>Enviá el pedido</h3>
+          <p>Poné tu nombre, decinos si retirás o querés envío, y tocá el botón. Se abre WhatsApp con el pedido ya escrito.</p>
+        </article>
+        <article class="paso aparece">
+          <div class="paso__numero">3</div>
+          <h3>Coordinamos y listo</h3>
+          <p>Confirmamos stock, total y forma de pago por chat. Después coordinamos la entrega o el retiro.</p>
+        </article>
+      </div>
+    </div>
+  </section>
 
-                <div class="foto-placeholder">
-                    <img src="tichi8.jpeg" alt="Recuerdo 8">
-                </div>
+  <!-- ======================= PREGUNTAS FRECUENTES ======================= -->
+  <section class="seccion" id="faq">
+    <div class="contenedor">
+      <h2 class="seccion__titulo">Preguntas frecuentes</h2>
+      <p class="seccion__sub">Si te queda alguna duda, escribinos por WhatsApp.</p>
+      <div class="faq" id="faq-lista"></div>
+    </div>
+  </section>
+</main>
 
-                <div class="foto-placeholder">
-                    <img src="tichi9.jpeg" alt="Recuerdo 9">
-                </div>
-
-                <div class="foto-placeholder">
-                    <img src="tichi10.jpeg" alt="Recuerdo 10">
-                </div>
-
-                <div class="foto-placeholder">
-                    <img src="tichi11.jpeg" alt="Recuerdo 11">
-                </div>
-
-                <div class="foto-placeholder">
-                    <img src="tichi12.jpeg" alt="Recuerdo 12">
-                </div>
-
-                <div class="foto-placeholder">
-                    <img src="tichi13.jpeg" alt="Recuerdo 13">
-                </div>
-            </div>
+<!-- ======================= FOOTER ======================= -->
+<footer class="footer">
+  <div class="contenedor">
+    <div class="footer__grilla">
+      <div>
+        <div class="logo">
+          <span class="logo__marca" aria-hidden="true">p</span>
+          <span class="logo__texto">productosimportadossl</span>
         </div>
-    </section>
-
-    <!-- 3. LÍNEA DE TIEMPO / RECUERDOS -->
-    <section id="timeline" class="section reveal">
-        <div class="container">
-            <h2>Un Viaje Inolvidable</h2>
-            <div class="timeline">
-                
-                <!-- ANÉCDOTA 1 -->
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <!-- REEMPLAZAR FECHA Y TEXTO -->
-                        <h3>[Anecdota o algo que quieran poner por ejemplo simo puto 1 / FECHA]</h3>
-                        <p>[ANÉCDOTA 1: Escribí acá un recuerdo divertido o importante. Ej: "El día que nos conocimos y no parábamos de reír por esa pavada..."]</p>
-                    </div>
-                </div>
-                
-                <!-- ANÉCDOTA 2 -->
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <!-- REEMPLAZAR FECHA Y TEXTO -->
-                        <h3>[Anecdota o algo que quieran poner por ejemplo simo puto 2 / FECHA]</h3>
-                        <p>[ANÉCDOTA 2: Escribí acá otro recuerdo memorable. Ese viaje, esa salida, ese momento especial.]</p>
-                    </div>
-                </div>
-                
-                <!-- ANÉCDOTA 3 -->
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <!-- REEMPLAZAR FECHA Y TEXTO -->
-                        <h3>[Anecdota o algo que quieran poner por ejemplo simo puto 3 / FECHA]</h3>
-                        <p>[ANÉCDOTA 3: Un momento donde estuvieron juntos en las buenas y en las malas. El aguante incondicional.]</p>
-                    </div>
-                </div>
-                
-                <!-- ANÉCDOTA 4 -->
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <!-- REEMPLAZAR FECHA Y TEXTO -->
-                        <h3>[Anecdota o algo que quieran poner por ejemplo simo puto 4 / HOY]</h3>
-                        <p>[ANÉCDOTA 4: Una reflexión sobre el presente y lo lindo que es seguir compartiendo la vida.]</p>
-                    </div>
-                </div>
-
-            </div>
+        <p id="footer-slogan">Importados con envío a todo el país.</p>
+        <p>Pedidos y consultas por WhatsApp, todos los días.</p>
+        <div class="footer__redes">
+          <a class="wa" id="footer-whatsapp" href="#" target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.97L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.13c-.25.7-1.44 1.33-1.98 1.38-.54.06-1.04.26-3.52-.72-2.99-1.18-4.87-4.27-5.02-4.47-.14-.2-1.19-1.59-1.19-3.03 0-1.44.75-2.15 1.02-2.44.27-.3.59-.37.79-.37s.39 0 .56.01c.18.01.42-.07.65.5.24.58.81 1.99.88 2.13.07.14.12.31.02.5-.1.2-.15.32-.3.5-.15.17-.31.39-.45.52-.14.14-.29.3-.12.58.17.29.75 1.24 1.61 2.01 1.11.99 2.04 1.3 2.33 1.44.29.15.46.12.63-.07.17-.2.73-.85.93-1.14.2-.29.39-.24.66-.14.27.1 1.68.79 1.97.94.29.14.48.22.55.34.07.12.07.7-.18 1.4Z"/></svg>
+          </a>
+          <a id="footer-instagram" href="#" target="_blank" rel="noopener" aria-label="Seguinos en Instagram">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><path d="M17.5 6.5h.01"></path></svg>
+          </a>
         </div>
-    </section>
+      </div>
 
-    <!-- 4. MENSAJE PERSONAL -->
-    <section id="mensaje" class="section reveal">
-        <div class="container carta-container">
-            <div class="carta">
-                <h2>Para vos</h2>
-                <p class="texto-carta">
-                    <!-- REEMPLAZAR TEXTO DE LA CARTA -->
-                    [MENSAJE PERSONAL: Acá va tu carta. Podés explayarte sobre lo mucho que querés a esta persona, lo que significa su amistad para vos y tus mejores deseos para su nuevo año de vida.<br><br>
-                    Aprovechá para ponerte sentimental, esta sección tiene una tipografía especial que simula escritura a mano para que se sienta bien cercano y escrito con el corazón.<br><br>
-                    Que los cumplas muy feliz.]
-                </p>
-                <!-- REEMPLAZAR FIRMA -->
-                <p class="firma">Con todo nuestro cariño,<br>para bose</p>
-            </div>
-        </div>
-    </section>
+      <div>
+        <h3>Envíos y retiro</h3>
+        <p id="footer-zona">Envíos a todo el país.</p>
+        <p id="footer-retiro">Retiro sin cargo coordinando por WhatsApp.</p>
+        <h3 style="margin-top:18px">Horarios</h3>
+        <p id="footer-horarios">Lunes a sábados de 9 a 20 h</p>
+      </div>
 
-    <!-- 5. CIERRE LÚDICO -->
-    <section id="cierre" class="section reveal">
-        <div class="container text-center">
-            <h2>¡Una última cosa!</h2>
-            <button id="btn-sorpresa" class="btn">Tocar para descubrir</button>
-            
-            <div id="mensaje-sorpresa" class="hidden">
-                <p>¡TROLEADO PUTO!</p>
-                <p class="small-text">(te la re comes)</p>
-            </div>
-        </div>
-    </section>
+      <div>
+        <h3>Secciones</h3>
+        <ul class="footer__lista">
+          <li><a href="#catalogo">Catálogo</a></li>
+          <li><a href="#como-comprar">Cómo comprar</a></li>
+          <li><a href="#faq">Preguntas frecuentes</a></li>
+          <li><a href="admin/">Panel de administración</a></li>
+        </ul>
+      </div>
+    </div>
 
-    <!-- SCRIPTS MÁGICOS -->
-    <script>
-        // --- 1. CONFIGURACIÓN DEL CONTADOR SORPRESA ---
-        // REEMPLAZAR ESTE NÚMERO POR LOS DÍAS ESTIMADOS DE AMISTAD (o cualquier número que signifique algo)
-        const DIAS_DE_AMISTAD = 1500; 
+    <div class="footer__legal">
+      <span>© <span id="anio">2026</span> productosimportadossl · Todos los derechos reservados.</span>
+      <span>Los precios están en pesos argentinos y pueden variar sin previo aviso.</span>
+    </div>
+  </div>
+</footer>
 
-        // --- 2. LÓGICA DE REVELACIÓN AL HACER SCROLL (Intersection Observer) ---
-        const revealElements = document.querySelectorAll('.reveal');
-        
-        const revealObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                    observer.unobserve(entry.target); // Solo animar la primera vez
-                }
-            });
-        }, {
-            root: null,
-            threshold: 0.15, // Se activa cuando el 15% del elemento es visible
-            rootMargin: "0px 0px -50px 0px"
-        });
+<!-- ======================= BOTÓN FLOTANTE DE WHATSAPP ======================= -->
+<a class="fab-whatsapp" id="fab-whatsapp" href="#" target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.97L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.13c-.25.7-1.44 1.33-1.98 1.38-.54.06-1.04.26-3.52-.72-2.99-1.18-4.87-4.27-5.02-4.47-.14-.2-1.19-1.59-1.19-3.03 0-1.44.75-2.15 1.02-2.44.27-.3.59-.37.79-.37s.39 0 .56.01c.18.01.42-.07.65.5.24.58.81 1.99.88 2.13.07.14.12.31.02.5-.1.2-.15.32-.3.5-.15.17-.31.39-.45.52-.14.14-.29.3-.12.58.17.29.75 1.24 1.61 2.01 1.11.99 2.04 1.3 2.33 1.44.29.15.46.12.63-.07.17-.2.73-.85.93-1.14.2-.29.39-.24.66-.14.27.1 1.68.79 1.97.94.29.14.48.22.55.34.07.12.07.7-.18 1.4Z"/></svg>
+  <span>WhatsApp</span>
+</a>
 
-        revealElements.forEach(el => revealObserver.observe(el));
+<!-- Barra con el total, sólo en celular y sólo cuando hay algo en el carrito -->
+<div class="barra-total" id="barra-total">
+  <div class="barra-total__texto">
+    <span id="barra-total-items">0 productos</span>
+    <strong id="barra-total-monto">$0</strong>
+  </div>
+  <button class="btn btn--chico" id="barra-total-btn">Ver carrito</button>
+</div>
 
-        // --- 3. BOTÓN SORPRESA Y CONTADOR ANIMADO ---
-        const btnSorpresa = document.getElementById('btn-sorpresa');
-        const mensajeSorpresa = document.getElementById('mensaje-sorpresa');
-        const contadorEl = document.getElementById('contador');
+<!-- ======================= CARRITO LATERAL ======================= -->
+<div class="fondo-modal" id="fondo-modal"></div>
 
-        btnSorpresa.addEventListener('click', () => {
-            btnSorpresa.style.display = 'none';
-            mensajeSorpresa.classList.remove('hidden');
-            mensajeSorpresa.classList.add('visible');
+<aside class="carrito" id="carrito" role="dialog" aria-modal="true" aria-labelledby="carrito-titulo" aria-hidden="true">
+  <div class="carrito__cabecera">
+    <div>
+      <h2 id="carrito-titulo">Tu pedido</h2>
+      <p class="cuenta" id="carrito-cuenta">Sin productos</p>
+    </div>
+    <button class="btn btn--fantasma" id="cerrar-carrito" aria-label="Cerrar el carrito">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+    </button>
+  </div>
 
-            // Animar el contador numérico
-            let currentCount = 0;
-            const duration = 2000; // Duración de la animación en ms
-            const frames = 60; // fps aproximados
-            const step = DIAS_DE_AMISTAD / (duration / (1000 / frames)); 
+  <div class="carrito__cuerpo" id="carrito-cuerpo"></div>
 
-            const counterInterval = setInterval(() => {
-                currentCount += step;
-                if (currentCount >= DIAS_DE_AMISTAD) {
-                    contadorEl.innerText = DIAS_DE_AMISTAD;
-                    clearInterval(counterInterval);
-                    
-                    // Lluvia de confetti extra al terminar!
-                    tossExtraConfetti();
-                } else {
-                    contadorEl.innerText = Math.floor(currentCount);
-                }
-            }, 1000 / frames);
-        });
+  <div class="carrito__pie" id="carrito-pie" hidden>
+    <div class="carrito__total">
+      <span>Total</span>
+      <strong id="carrito-total">$0</strong>
+    </div>
+    <button class="btn btn--whatsapp btn--bloque btn--grande" id="enviar-pedido">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.97L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.13c-.25.7-1.44 1.33-1.98 1.38-.54.06-1.04.26-3.52-.72-2.99-1.18-4.87-4.27-5.02-4.47-.14-.2-1.19-1.59-1.19-3.03 0-1.44.75-2.15 1.02-2.44.27-.3.59-.37.79-.37s.39 0 .56.01c.18.01.42-.07.65.5.24.58.81 1.99.88 2.13.07.14.12.31.02.5-.1.2-.15.32-.3.5-.15.17-.31.39-.45.52-.14.14-.29.3-.12.58.17.29.75 1.24 1.61 2.01 1.11.99 2.04 1.3 2.33 1.44.29.15.46.12.63-.07.17-.2.73-.85.93-1.14.2-.29.39-.24.66-.14.27.1 1.68.79 1.97.94.29.14.48.22.55.34.07.12.07.7-.18 1.4Z"/></svg>
+      Enviar pedido por WhatsApp
+    </button>
+    <p class="carrito__nota">No se paga nada online. Confirmamos todo por chat antes de cerrar el pedido.</p>
+  </div>
+</aside>
 
+<!-- ======================= MODAL DE PRODUCTO ======================= -->
+<div class="modal" id="modal-producto" role="dialog" aria-modal="true" aria-labelledby="modal-titulo" aria-hidden="true">
+  <button class="modal__cerrar" id="cerrar-modal" aria-label="Cerrar">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+  </button>
+  <div class="modal__scroll" id="modal-scroll"></div>
+  <div class="modal__pie" id="modal-pie"></div>
+</div>
 
-        // --- 4. SISTEMA DE CONFETTI (Vanilla JS Canvas) ---
-        const canvas = document.getElementById('confetti-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        let particles = [];
-        // Paleta de colores del confetti (hace match con el diseño)
-        const colors = ['#042e4c', '#b2d3c2', '#7bed9f', '#70a1ff', '#1a4365'];
-
-        class Particle {
-            constructor(x, y, extraSpeed = false) {
-                this.x = x;
-                this.y = y;
-                this.r = Math.random() * 6 + 3; // Tamaño
-                this.dx = Math.random() * 4 - 2; // Velocidad X
-                this.dy = Math.random() * 4 + 2 + (extraSpeed ? 3 : 0); // Velocidad Y
-                this.color = colors[Math.floor(Math.random() * colors.length)];
-                this.tilt = Math.random() * 10;
-                this.tiltAngle = 0;
-                this.tiltAngleInc = (Math.random() * 0.07) + 0.05;
-            }
-            draw() {
-                ctx.beginPath();
-                ctx.lineWidth = this.r;
-                ctx.strokeStyle = this.color;
-                ctx.moveTo(this.x + this.tilt + this.r, this.y);
-                ctx.lineTo(this.x + this.tilt, this.y + this.tilt + this.r);
-                ctx.stroke();
-            }
-            update() {
-                this.tiltAngle += this.tiltAngleInc;
-                this.y += this.dy;
-                this.x += Math.sin(this.tiltAngle) * 2;
-                this.tilt = Math.sin(this.tiltAngle) * 15;
-                
-                // Reiniciar si cae fuera de pantalla
-                if (this.y > canvas.height) {
-                    this.x = Math.random() * canvas.width;
-                    this.y = -20;
-                }
-                this.draw();
-            }
-        }
-
-        // Crear partículas iniciales
-        function initConfetti(count = 100) {
-            for (let i = 0; i < count; i++) {
-                particles.push(new Particle(
-                    Math.random() * canvas.width, 
-                    Math.random() * canvas.height - canvas.height
-                ));
-            }
-        }
-
-        // Bucle de animación
-        function animateConfetti() {
-            requestAnimationFrame(animateConfetti);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => p.update());
-        }
-
-        // Lanzar extra confetti (se usa en el botón sorpresa)
-        function tossExtraConfetti() {
-            for(let i = 0; i < 80; i++) {
-                particles.push(new Particle(
-                    Math.random() * canvas.width, 
-                    -50, 
-                    true // extra speed
-                ));
-            }
-        }
-
-        // Iniciar
-        initConfetti(70); // Confetti base moderado
-        animateConfetti();
-
-        // Ajustar canvas al redimensionar la ventana
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-    </script>
+<script type="module" src="assets/js/tienda.js"></script>
 </body>
 </html>
