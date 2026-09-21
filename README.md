@@ -29,7 +29,6 @@ assets/
   img/favicon.svg          Icono del sitio
 supabase/schema.sql        SQL completo: tablas, RLS, bucket y 12 productos
 vercel.json                Configuración del deploy
-cumple.html                Página anterior del repo (se conservó)
 ```
 
 ---
