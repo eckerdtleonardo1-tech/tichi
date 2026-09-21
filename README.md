@@ -52,10 +52,8 @@ Eso crea:
 - Tabla `categorias` (id, nombre, orden, fecha_creacion)
 - Tabla `productos` (id, nombre, categoria, precio, precio_anterior, descripcion,
   imagenes, variantes, stock, etiqueta, destacado, activo, fecha_creacion)
-- Tabla `admins` con la lista de usuarios habilitados, y la función `es_admin()`.
 - Las políticas de **Row Level Security**: el público sólo **lee** los productos con
-  `activo = true`; crear, editar y borrar requiere estar logueado **y estar en la
-  tabla `admins`** (estar logueado no alcanza).
+  `activo = true`; crear, editar y borrar requiere una sesión iniciada.
 - El bucket de Storage **`productos`** para las fotos, público para lectura y
   escribible sólo por el admin logueado.
 - 4 categorías y **12 productos de ejemplo** (3 por categoría).
@@ -64,45 +62,33 @@ El script se puede volver a ejecutar cuando quieras: las tablas y las políticas
 recrean sin romper nada, y **los 12 productos de ejemplo se cargan sólo si la tabla
 está vacía**, así que no te va a duplicar tu catálogo real.
 
-### 3. Crear el usuario admin y habilitarlo
-
-Son **dos pasos**, y si te salteás el segundo el panel deja entrar pero no guarda nada.
+### 3. Crear el usuario del vendedor y cerrar el registro
 
 **3.a — Crear el usuario**
 
 1. Supabase → **Authentication → Users → Add user → Create new user**.
-2. Poné el email y la contraseña de quien va a administrar la tienda.
+2. Poné el email y la contraseña con los que va a entrar el vendedor.
 3. Activá **Auto Confirm User** (si no, el usuario queda sin confirmar y no puede entrar).
 
-**3.b — Habilitarlo como administrador**
+No hay registro público ni "crear cuenta": el único usuario es el que creás acá.
 
-Andá al **SQL Editor**, pegá esto con el email del paso anterior y ejecutalo:
+**3.b — Cerrar el registro público ← no te lo saltees**
 
-```sql
-insert into public.admins (user_id, email)
-select id, email from auth.users
-where email = 'el-email-del-admin@ejemplo.com'
-on conflict (user_id) do nothing;
-```
+Supabase lo trae **abierto de fábrica**. Desactivalo en:
 
-Comprobalo con `select email from public.admins;` — tiene que devolver una fila.
+**Authentication → Sign In / Providers → Email → «Allow new users to sign up»**
 
-**3.c — Cerrar el registro público**
+> **Por qué es el paso más importante:** la clave `anon` viaja en el navegador, es
+> pública a propósito. Con el registro abierto, cualquiera podría crearse una
+> cuenta con esa clave, confirmar su propio mail y quedar habilitado para editar el
+> catálogo. Con el registro cerrado, los únicos usuarios que existen son los que
+> creás vos a mano.
+>
+> Si te lo olvidás, el panel te lo avisa con un cartel rojo la próxima vez que
+> entres: lo comprueba solo contra la configuración de tu proyecto.
 
-Supabase trae el registro por email **abierto de fábrica**. Desactivalo en
-**Authentication → Sign In / Providers → Email → "Allow new users to sign up"**.
-
-> **Por qué importan 3.b y 3.c:** la clave `anon` es pública, así que sin estas dos
-> cosas cualquiera podría registrarse con ella, confirmar su propio mail y quedar
-> logueado. La tabla `admins` es la que realmente te protege: aunque dejes el
-> registro abierto, una cuenta que no esté en esa lista no puede crear, editar ni
-> borrar nada, ni subir fotos. Las dos medidas juntas son la configuración correcta.
-
-Para quitarle el acceso a alguien más adelante:
-
-```sql
-delete from public.admins where email = 'el-email@ejemplo.com';
-```
+Si algún día querés sumar a otra persona, la creás igual que en 3.a. Para quitarle
+el acceso, la borrás desde **Authentication → Users**.
 
 ### 4. Conectar el sitio
 
@@ -184,15 +170,15 @@ proyecto a otra organización, y Vercel transferir el proyecto.
 **El plan gratuito de Supabase pausa los proyectos sin tráfico.** Si la tienda
 pasa alrededor de una semana sin visitas, el proyecto se pausa y hay que
 reactivarlo a mano desde el panel de Supabase — mientras está pausado, la tienda
-no carga productos. Con una tienda que recibe visitas seguido no pasa, pero si
-arranca despacio te lo vas a cruzar, y es incómodo que le pase a un cliente que
-pagó. Verificá las condiciones y los precios actuales en la página de Supabase
-antes de prometer nada, porque estas políticas cambian.
+no carga productos. Con visitas seguidas no pasa, pero si arranca despacio te lo
+vas a cruzar, y es incómodo que le pase a alguien que pagó. Verificá las
+condiciones y los precios actuales en la página de Supabase antes de prometer
+nada, porque estas políticas cambian.
 
-**El cliente va a olvidarse la contraseña.** Hoy el panel no tiene "olvidé mi
-contraseña": si pasa, se la cambiás vos desde Supabase en
-**Authentication → Users → (el usuario) → Reset password**. Si preferís que se
-arregle solo, hay que agregarle la recuperación por mail al panel.
+**Si el vendedor se olvida la contraseña**, se la cambiás vos desde Supabase en
+**Authentication → Users → (el usuario) → Reset password**. El panel no tiene
+"olvidé mi contraseña" a propósito, para no sumar pantallas: son 10 segundos
+desde el panel de Supabase.
 
 ## Cómo se usa
 

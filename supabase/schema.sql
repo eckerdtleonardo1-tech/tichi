@@ -70,44 +70,7 @@ create index if not exists productos_fecha_idx     on public.productos (fecha_cr
 create index if not exists categorias_orden_idx    on public.categorias (orden, nombre);
 
 -- ----------------------------------------------------------------------------
---  3. Quién es administrador
---     IMPORTANTE: no alcanza con "estar logueado". Supabase trae el registro
---     por email activado de fábrica, así que cualquiera podría crearse una
---     cuenta con la clave pública y, si las políticas sólo pidieran sesión,
---     editar el catálogo. Por eso hay una lista explícita: sólo los usuarios
---     que estén en esta tabla pueden escribir.
--- ----------------------------------------------------------------------------
-
-create table if not exists public.admins (
-    user_id        uuid primary key references auth.users (id) on delete cascade,
-    email          text,
-    fecha_creacion timestamptz not null default now()
-);
-
-comment on table public.admins is 'Usuarios habilitados para administrar el catálogo.';
-
-alter table public.admins enable row level security;
--- Nadie lee esta tabla desde el navegador: se consulta sólo a través de
--- es_admin(), que corre con los permisos del dueño (security definer).
--- Sin políticas de SELECT, ni el admin logueado puede listar a los demás.
-
-create or replace function public.es_admin()
-returns boolean
-language sql
-stable
-security definer
-set search_path = public
-as $$
-    select exists (select 1 from public.admins where user_id = auth.uid());
-$$;
-
-comment on function public.es_admin() is 'true si el usuario de la sesión actual está habilitado como admin.';
-
-revoke all on function public.es_admin() from public;
-grant execute on function public.es_admin() to authenticated;
-
--- ----------------------------------------------------------------------------
---  4. Permisos de tabla
+--  3. Permisos de tabla
 --     Las políticas RLS deciden QUÉ FILAS puede tocar cada rol, pero primero el
 --     rol necesita permiso sobre la tabla. Supabase suele darlos solo, pero los
 --     dejamos explícitos para que el script funcione siempre.
@@ -124,7 +87,7 @@ grant select, insert, update, delete on public.productos  to authenticated;
 grant select, insert, update, delete on public.categorias to authenticated;
 
 -- ----------------------------------------------------------------------------
---  5. Row Level Security
+--  4. Row Level Security
 --     · Público (anon): sólo LEE productos activos y todas las categorías.
 --     · Admin logueado (authenticated): lee todo y puede crear/editar/borrar.
 -- ----------------------------------------------------------------------------
@@ -133,8 +96,8 @@ alter table public.productos  enable row level security;
 alter table public.categorias enable row level security;
 
 -- productos --------------------------------------------------------------
--- Vale para el público y también para una sesión abierta: si el dueño deja el
--- panel logueado y entra a su propia tienda, la ve igual que un cliente.
+-- Vale para el público y también para una sesión abierta: si el vendedor deja
+-- el panel logueado y entra a su tienda, la ve igual que un comprador.
 drop policy if exists productos_select_publico on public.productos;
 create policy productos_select_publico on public.productos
     for select to anon, authenticated
@@ -143,22 +106,22 @@ create policy productos_select_publico on public.productos
 drop policy if exists productos_select_admin on public.productos;
 create policy productos_select_admin on public.productos
     for select to authenticated
-    using (public.es_admin());
+    using (true);
 
 drop policy if exists productos_insert_admin on public.productos;
 create policy productos_insert_admin on public.productos
     for insert to authenticated
-    with check (public.es_admin());
+    with check (true);
 
 drop policy if exists productos_update_admin on public.productos;
 create policy productos_update_admin on public.productos
     for update to authenticated
-    using (public.es_admin()) with check (public.es_admin());
+    using (true) with check (true);
 
 drop policy if exists productos_delete_admin on public.productos;
 create policy productos_delete_admin on public.productos
     for delete to authenticated
-    using (public.es_admin());
+    using (true);
 
 -- categorias -------------------------------------------------------------
 drop policy if exists categorias_select_publico on public.categorias;
@@ -169,20 +132,20 @@ create policy categorias_select_publico on public.categorias
 drop policy if exists categorias_insert_admin on public.categorias;
 create policy categorias_insert_admin on public.categorias
     for insert to authenticated
-    with check (public.es_admin());
+    with check (true);
 
 drop policy if exists categorias_update_admin on public.categorias;
 create policy categorias_update_admin on public.categorias
     for update to authenticated
-    using (public.es_admin());
+    using (true) with check (true);
 
 drop policy if exists categorias_delete_admin on public.categorias;
 create policy categorias_delete_admin on public.categorias
     for delete to authenticated
-    using (public.es_admin());
+    using (true);
 
 -- ----------------------------------------------------------------------------
---  6. Storage: bucket público "productos" para las fotos
+--  5. Storage: bucket público "productos" para las fotos
 -- ----------------------------------------------------------------------------
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
@@ -207,21 +170,20 @@ create policy productos_storage_select on storage.objects
 drop policy if exists productos_storage_insert on storage.objects;
 create policy productos_storage_insert on storage.objects
     for insert to authenticated
-    with check (bucket_id = 'productos' and public.es_admin());
+    with check (bucket_id = 'productos');
 
 drop policy if exists productos_storage_update on storage.objects;
 create policy productos_storage_update on storage.objects
     for update to authenticated
-    using (bucket_id = 'productos' and public.es_admin())
-    with check (bucket_id = 'productos' and public.es_admin());
+    using (bucket_id = 'productos') with check (bucket_id = 'productos');
 
 drop policy if exists productos_storage_delete on storage.objects;
 create policy productos_storage_delete on storage.objects
     for delete to authenticated
-    using (bucket_id = 'productos' and public.es_admin());
+    using (bucket_id = 'productos');
 
 -- ----------------------------------------------------------------------------
---  7. Datos de ejemplo: 4 categorías y 12 productos (3 por categoría)
+--  6. Datos de ejemplo: 4 categorías y 12 productos (3 por categoría)
 --     Las fotos se cargan después desde el panel; por eso imagenes = '{}'
 --     y el sitio muestra un placeholder prolijo mientras tanto.
 --     Los productos se cargan sólo si la tabla está vacía.
@@ -313,39 +275,27 @@ end if;
 end $seed$;
 
 -- ============================================================================
---  8. HABILITAR AL ADMINISTRADOR  ← EL PASO QUE NO TE PODÉS SALTEAR
+--  7. DESPUÉS DE CORRER ESTO: CERRAR EL REGISTRO PÚBLICO
 -- ----------------------------------------------------------------------------
---  Sin esto nadie puede cargar productos: el panel deja entrar pero no guarda.
+--  Esto no se hace con SQL, son dos clics en el panel de Supabase, y es el
+--  único paso que protege el catálogo. No te lo saltees.
 --
---  1. Primero creá el usuario en Supabase:
---       Authentication -> Users -> Add user -> Create new user
---       (poné el email y la contraseña, y tildá "Auto Confirm User")
+--    Authentication -> Sign In / Providers -> Email
+--    -> "Allow new users to sign up": DESACTIVAR
 --
---  2. Después cambiá el email de acá abajo por el de ese usuario y ejecutá
---     estas líneas (podés correrlas solas, sin volver a pasar todo el script):
--- ============================================================================
-
-insert into public.admins (user_id, email)
-select id, email from auth.users
-where email = 'CAMBIAR@POR-EL-EMAIL-DEL-ADMIN.com'
-on conflict (user_id) do nothing;
-
--- Verificá que quedó habilitado (tiene que devolver una fila):
---   select email from public.admins;
+--  Por qué: la clave anon viaja en el navegador, es pública a propósito. Con el
+--  registro abierto, cualquiera podría crearse una cuenta con esa clave y
+--  quedar habilitado para editar el catálogo. Con el registro cerrado, los
+--  únicos usuarios que existen son los que creás vos desde Authentication.
 --
--- Para quitarle el acceso a alguien más adelante:
---   delete from public.admins where email = 'el-email@ejemplo.com';
-
--- ============================================================================
---  Y cerrá el registro público: Supabase lo trae ABIERTO de fábrica.
---    Authentication -> Sign In / Providers -> Email -> "Allow new users to
---    sign up": desactivalo.
---  La lista de admins ya te protege igual, pero con las dos cosas nadie puede
---  ni crearse una cuenta en tu proyecto.
+--  El panel te avisa con un cartel rojo si detecta que quedó abierto.
+--
+--  Y creá el usuario del vendedor en:
+--    Authentication -> Users -> Add user -> Create new user
+--    (email + contraseña, con "Auto Confirm User" activado)
 -- ============================================================================
 
 -- ============================================================================
 --  Listo. Verificá con:
 --    select nombre, categoria, precio, activo from public.productos order by categoria;
---    select email from public.admins;
 -- ============================================================================

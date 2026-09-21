@@ -483,4 +483,17 @@ body.admin { background: var(--fondo); padding-bottom: env(safe-area-inset-botto
 }
 .fondo-panel.abierto { opacity: 1; pointer-events: auto; }
 
+.alerta-registro {
+  padding: 13px 15px;
+  margin-bottom: 14px;
+  border: 1px solid #FECACA;
+  border-left: 4px solid var(--oferta);
+  border-radius: var(--r-md);
+  background: var(--oferta-suave);
+  color: #991B1B;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.alerta-registro strong { display: block; margin-bottom: 3px; }
+
 .oculto { display: none !important; }

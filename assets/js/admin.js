@@ -5,7 +5,7 @@
    y gestión de categorías. Todo pensado para el celular.
    ============================================================================ */
 
-import { supabaseConfigurado } from './config.js';
+import { supabaseConfigurado, SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
 import {
   cargarCliente, traerTodosLosProductos, traerCategorias,
   crearProducto, actualizarProducto, borrarProducto,
@@ -116,43 +116,31 @@ async function cerrarSesion() {
 }
 
 /**
- * Estar logueado no alcanza: el usuario tiene que estar en la tabla "admins".
- * Lo comprueba la base con la función es_admin(), así que no se puede falsear
- * desde el navegador.
+ * Con el registro público abierto, cualquiera puede crearse una cuenta con la
+ * clave anon y quedar habilitado para editar el catálogo. Supabase publica su
+ * configuración de auth, así que la leemos y avisamos si quedó abierto.
+ * Si la consulta falla, no mostramos nada: mejor callarse que dar un falso aviso.
  */
-async function estaHabilitado() {
-  const { data, error } = await sb.rpc('es_admin');
-  if (error) throw error;
-  return data === true;
+async function avisarSiElRegistroEstaAbierto() {
+  try {
+    const respuesta = await fetch(`${SUPABASE_URL}/auth/v1/settings`, {
+      headers: { apikey: SUPABASE_ANON_KEY },
+    });
+    if (!respuesta.ok) return;
+    const ajustes = await respuesta.json();
+    if (ajustes.disable_signup === false) {
+      $('#alerta-registro').classList.remove('oculto');
+    }
+  } catch {
+    /* sin conexión o el endpoint cambió: no decimos nada */
+  }
 }
 
 async function entrarAlPanel(usuario) {
-  let habilitado;
-  try {
-    habilitado = await estaHabilitado();
-  } catch (error) {
-    mostrarLogin();
-    mostrarErrorLogin(
-      `No pudimos verificar el permiso de administrador (${mensajeDeError(error)}). ` +
-      'Revisá que hayas ejecutado el paso 8 de supabase/schema.sql.'
-    );
-    await sb.auth.signOut();
-    return;
-  }
-
-  if (!habilitado) {
-    mostrarLogin();
-    mostrarErrorLogin(
-      `La cuenta ${usuario?.email ?? ''} existe pero no está habilitada para administrar ` +
-      'el catálogo. Agregala a la tabla "admins" (paso 8 de supabase/schema.sql).'
-    );
-    await sb.auth.signOut();
-    return;
-  }
-
   $('#pantalla-login').classList.add('oculto');
   $('#pantalla-panel').classList.remove('oculto');
   $('#usuario-actual').textContent = usuario?.email ?? '';
+  avisarSiElRegistroEstaAbierto();
   await recargarTodo();
 }
 
