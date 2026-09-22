@@ -30,6 +30,19 @@
     <h1>Panel de administración</h1>
     <p class="login__sub">Entrá con tu email y contraseña para gestionar el catálogo.</p>
 
+    <div class="caja-demo oculto" id="caja-demo">
+      <strong>Modo demostración</strong>
+      <p>Entrá con estos datos para probar el panel:</p>
+      <dl>
+        <dt>Email</dt><dd id="demo-email">—</dd>
+        <dt>Contraseña</dt><dd id="demo-clave">—</dd>
+      </dl>
+      <p class="caja-demo__nota">
+        Lo que cargues o borres queda sólo en este navegador. No hay base de datos
+        detrás y no afecta nada real.
+      </p>
+    </div>
+
     <div class="login__error oculto" id="login-error" role="alert"></div>
 
     <form id="form-login" novalidate>
@@ -49,7 +62,7 @@
     </form>
 
     <p class="login__pie">
-      No hay registro público: el usuario se crea desde Supabase.<br>
+      <span id="login-pie-texto">No hay registro público: el usuario se crea desde Supabase.</span><br>
       <a href="../">Volver a la tienda</a>
     </p>
   </div>
@@ -64,6 +77,7 @@
         <div class="panel-header__marca">
           <span class="logo__marca" aria-hidden="true">p</span>
           <span class="texto">Panel</span>
+          <span class="chip-demo oculto" id="chip-demo">demo</span>
         </div>
         <span class="panel-header__usuario" id="usuario-actual"></span>
         <a class="btn btn--secundario btn--chico" href="../" target="_blank" rel="noopener">Ver tienda</a>
@@ -80,6 +94,17 @@
   <!-- ---------- Vista: productos ---------- -->
   <main class="panel" id="vista-productos">
     <div class="contenedor">
+
+      <div class="barra-demo oculto" id="barra-demo">
+        <div>
+          <strong>Estás en la demostración.</strong>
+          Cargá, editá y borrá con total libertad: los cambios quedan en este
+          navegador y se ven al instante en la tienda.
+        </div>
+        <button class="btn btn--secundario btn--chico" id="btn-reiniciar-demo" type="button">
+          Reiniciar la demo
+        </button>
+      </div>
 
       <div class="alerta-registro oculto" id="alerta-registro" role="alert">
         <strong>El registro público está abierto en Supabase.</strong>

@@ -24,7 +24,9 @@ assets/
   js/utils.js              Formato de precios, búsqueda, avisos
   js/tienda.js             Lógica del sitio público
   js/admin.js              Lógica del panel
-  js/demo-data.js          12 productos de ejemplo (sólo si falta Supabase)
+  js/demo-data.js          Los 12 productos de ejemplo
+  js/demo-estado.js        El catálogo de la demo, guardado en el navegador
+  js/demo-db.js            Respaldo del panel en modo demo (misma interfaz que db.js)
   img/og.png               Imagen para compartir en WhatsApp / Instagram
   img/favicon.svg          Icono del sitio
   img/productos/           Las 20 ilustraciones de los productos de ejemplo
@@ -258,12 +260,41 @@ como está tenés una tienda que se ve y funciona como una tienda real:
 Todo eso **sin base de datos ni cuenta de Supabase**. Es la forma más rápida de
 mostrarle el catálogo a alguien.
 
-El panel de `/admin` en este modo avisa que es una demostración y que se activa al
-conectar la base. El mensaje está escrito para que lo pueda leer un cliente.
+**El panel también funciona en la demostración.** En `/admin` entrás con las
+credenciales que la propia pantalla te muestra:
+
+```
+demo@tienda.com  /  demo1234
+```
+
+Y ahí podés cargar productos, subir fotos desde la galería del celular, editar,
+borrar, usar los botones rápidos y administrar categorías. Todo real, pero contra
+el navegador en lugar de una base de datos: lo que hacés queda en ese dispositivo,
+no viaja a ningún servidor y no afecta a nadie más.
+
+El botón **«Reiniciar la demo»** devuelve el catálogo a los 12 productos
+originales, para poder repetir la presentación de cero.
 
 Si te ponés a desarrollar, pasá `mostrarAvisoDeDemo` a `true`: vuelve el cartel
 amarillo y el mensaje técnico, para no creer que ya está conectada a la base
 cuando en realidad sigue en modo demo.
+
+### Cómo mostrarle la tienda a alguien
+
+Un recorrido que muestra todo en dos minutos:
+
+1. Abrí la tienda y navegá el catálogo: buscador, chips de categoría, orden por
+   precio. Entrá a un producto con varias fotos para mostrar la galería.
+2. Agregá dos cosas al carrito, poné un nombre, elegí envío y tocá
+   **Enviar pedido por WhatsApp**. Se abre el chat con el pedido escrito: ese es
+   el momento que cierra la venta.
+3. Abrí `/admin` **en otra pestaña** y entrá con las credenciales de la demo.
+4. Cargá un producto con una foto del celular y guardá.
+5. Volvé a la pestaña de la tienda: **el producto ya está ahí, sin recargar.**
+   Las dos pestañas comparten el catálogo, así que el cambio se ve solo.
+6. Tocá «Reiniciar la demo» para dejar todo como estaba.
+
+El paso 5 es el que mejor explica el producto: el vendedor carga y se publica.
 
 ### Las fotos de los productos de ejemplo
 

@@ -6,18 +6,20 @@
    ============================================================================ */
 
 import { supabaseConfigurado, SUPABASE_URL, SUPABASE_ANON_KEY, TIENDA } from './config.js';
-import {
-  cargarCliente, traerTodosLosProductos, traerCategorias,
-  crearProducto, actualizarProducto, borrarProducto,
-  crearCategoria, actualizarCategoria, borrarCategoria,
-  subirFoto, borrarFoto,
-} from './db.js';
 import { precioARS, esc, normalizar, debounce, imagenPlaceholder, avisar, mensajeDeError } from './utils.js';
 
 const $ = (sel) => document.querySelector(sel);
 
-/** Cliente de Supabase, cargado una sola vez al abrir el panel. */
+/* El panel funciona igual contra Supabase o contra el catálogo de demostración
+   guardado en el navegador: los dos módulos exponen las mismas funciones, y se
+   elige uno al arrancar. De acá para abajo el panel no sabe en cuál está. */
+let api = null;
+
+/** Cliente de sesión (el de Supabase, o el simulado de la demo). */
 let sb = null;
+
+/** true cuando el panel corre sin base de datos, para mostrárselo a alguien. */
+let enDemo = false;
 
 /* --- Estado -------------------------------------------------------------- */
 
@@ -37,22 +39,26 @@ const estado = {
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!supabaseConfigurado) {
-    // Dos públicos distintos: si el sitio está publicado como demostración, el
-    // mensaje lo puede llegar a leer un cliente; si estás desarrollando, querés
-    // saber exactamente qué archivo completar.
-    mostrarErrorLogin(
-      TIENDA.mostrarAvisoDeDemo
-        ? 'Todavía no configuraste Supabase. Completá assets/js/config.js con la URL y la anon key de tu proyecto.'
-        : 'Esta es una demostración del catálogo. El panel para cargar productos se activa al conectar la base de datos.'
-    );
-    $('#login-btn').disabled = true;
-    return;
+    // Sin Supabase hay dos caminos: si el modo demo está activo, el panel
+    // funciona igual contra el navegador para poder mostrárselo a alguien; si
+    // está apagado, avisamos qué falta configurar.
+    if (!TIENDA.demoSiNoHayBaseDeDatos) {
+      mostrarErrorLogin(
+        'Todavía no configuraste Supabase. Completá assets/js/config.js con la URL y la anon key de tu proyecto.'
+      );
+      $('#login-btn').disabled = true;
+      return;
+    }
+    enDemo = true;
   }
 
+  api = enDemo ? await import('./demo-db.js') : await import('./db.js');
+
   conectarEventos();
+  if (enDemo) await prepararDemo();
 
   try {
-    sb = await cargarCliente();
+    sb = await api.cargarCliente();
   } catch (error) {
     mostrarErrorLogin(mensajeDeError(error));
     $('#login-btn').disabled = true;
@@ -68,6 +74,45 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (evento === 'SIGNED_IN') entrarAlPanel(sesion.user);
   });
 });
+
+/* --- Modo demostración --------------------------------------------------- */
+
+/**
+ * Deja el panel listo para mostrárselo a alguien: pone a la vista las
+ * credenciales de la demo (y las precarga, para entrar con un toque), marca la
+ * cabecera y habilita el botón que devuelve el catálogo a los 12 productos.
+ */
+async function prepararDemo() {
+  const { CREDENCIALES_DEMO } = api;
+
+  $('#demo-email').textContent = CREDENCIALES_DEMO.email;
+  $('#demo-clave').textContent = CREDENCIALES_DEMO.password;
+  $('#caja-demo').classList.remove('oculto');
+  $('#login-pie-texto').textContent =
+    'Así entra el vendedor a cargar sus productos, desde la computadora o el celular.';
+  $('#chip-demo').classList.remove('oculto');
+  $('#barra-demo').classList.remove('oculto');
+
+  // Precargadas para que quien mira no tenga que tipear nada.
+  $('#login-email').value = CREDENCIALES_DEMO.email;
+  $('#login-clave').value = CREDENCIALES_DEMO.password;
+
+  $('#btn-reiniciar-demo').addEventListener('click', reiniciarDemo);
+}
+
+async function reiniciarDemo() {
+  pedirConfirmacion({
+    titulo: '¿Reiniciar la demostración?',
+    texto: 'El catálogo vuelve a los 12 productos de ejemplo y se descarta todo lo que hayas cargado o cambiado.',
+    textoBoton: 'Reiniciar',
+    accion: async () => {
+      const { reiniciar } = await import('./demo-estado.js');
+      reiniciar();
+      await recargarTodo();
+      avisar('Demostración reiniciada');
+    },
+  });
+}
 
 /* --- Login --------------------------------------------------------------- */
 
@@ -117,6 +162,12 @@ async function iniciarSesion(evento) {
 async function cerrarSesion() {
   await sb.auth.signOut();
   mostrarLogin();
+  // En la demo dejamos los datos puestos otra vez, para poder volver a entrar
+  // con un toque durante la presentación.
+  if (enDemo) {
+    $('#login-email').value = api.CREDENCIALES_DEMO.email;
+    $('#login-clave').value = api.CREDENCIALES_DEMO.password;
+  }
   avisar('Sesión cerrada');
 }
 
@@ -127,6 +178,7 @@ async function cerrarSesion() {
  * Si la consulta falla, no mostramos nada: mejor callarse que dar un falso aviso.
  */
 async function avisarSiElRegistroEstaAbierto() {
+  if (enDemo) return; // en la demo no hay proyecto de Supabase que consultar
   try {
     const respuesta = await fetch(`${SUPABASE_URL}/auth/v1/settings`, {
       headers: { apikey: SUPABASE_ANON_KEY },
@@ -154,8 +206,8 @@ async function entrarAlPanel(usuario) {
 async function recargarTodo() {
   try {
     const [productos, categorias] = await Promise.all([
-      traerTodosLosProductos(),
-      traerCategorias(),
+      api.traerTodosLosProductos(),
+      api.traerCategorias(),
     ]);
     estado.productos = productos;
     estado.categorias = categorias;
@@ -276,7 +328,7 @@ async function alternarCampo(id, campo, boton) {
 
   boton.disabled = true;
   try {
-    const actualizado = await actualizarProducto(id, { [campo]: !producto[campo] });
+    const actualizado = await api.actualizarProducto(id, { [campo]: !producto[campo] });
     Object.assign(producto, actualizado);
     pintarMetricas();
     pintarProductos();
@@ -365,7 +417,7 @@ async function subirFotosElegidas(archivos) {
 
   for (const archivo of imagenes) {
     try {
-      const url = await subirFoto(archivo);
+      const url = await api.subirFoto(archivo);
       estado.fotos.push(url);
     } catch (error) {
       avisar(`No pudimos subir ${archivo.name}: ${mensajeDeError(error)}`, 'error');
@@ -441,19 +493,19 @@ async function guardarProducto() {
 
   try {
     if (estado.editando) {
-      const actualizado = await actualizarProducto(estado.editando.id, datos);
+      const actualizado = await api.actualizarProducto(estado.editando.id, datos);
       const i = estado.productos.findIndex((p) => String(p.id) === String(estado.editando.id));
       if (i !== -1) estado.productos[i] = actualizado;
       avisar('Producto actualizado');
     } else {
-      const creado = await crearProducto(datos);
+      const creado = await api.crearProducto(datos);
       estado.productos.unshift(creado);
       avisar('Producto creado');
     }
 
     // Recién ahora limpiamos del storage las fotos que se quitaron.
     for (const url of estado.fotosBorradas) {
-      borrarFoto(url).catch(() => { /* si falla, queda un archivo huérfano y nada más */ });
+      api.borrarFoto(url).catch(() => { /* si falla, queda un archivo huérfano y nada más */ });
     }
     estado.fotosBorradas = [];
 
@@ -499,9 +551,9 @@ function confirmarBorradoProducto(id) {
     texto: `Se va a borrar "${producto.nombre}" y sus fotos. Esta acción no se puede deshacer.`,
     accion: async () => {
       try {
-        await borrarProducto(id);
+        await api.borrarProducto(id);
         for (const url of producto.imagenes ?? []) {
-          borrarFoto(url).catch(() => {});
+          api.borrarFoto(url).catch(() => {});
         }
         estado.productos = estado.productos.filter((p) => String(p.id) !== String(id));
         pintarMetricas();
@@ -584,7 +636,7 @@ async function agregarCategoria(evento) {
     : 1;
 
   try {
-    const creada = await crearCategoria(nombre, orden);
+    const creada = await api.crearCategoria(nombre, orden);
     estado.categorias.push(creada);
     entrada.value = '';
     pintarSelectoresDeCategoria();
@@ -608,7 +660,7 @@ async function renombrarCategoria(id) {
 
   try {
     const anterior = categoria.nombre;
-    const actualizada = await actualizarCategoria(id, { nombre });
+    const actualizada = await api.actualizarCategoria(id, { nombre });
     Object.assign(categoria, actualizada);
     // En la base los productos se actualizan solos (ON UPDATE CASCADE);
     // acá replicamos el cambio para no tener que recargar todo.
@@ -641,7 +693,7 @@ function confirmarBorradoCategoria(id) {
     texto: `Se va a borrar "${categoria.nombre}".`,
     accion: async () => {
       try {
-        await borrarCategoria(id);
+        await api.borrarCategoria(id);
         estado.categorias = estado.categorias.filter((c) => String(c.id) !== String(id));
         pintarSelectoresDeCategoria();
         pintarCategorias();
@@ -674,15 +726,15 @@ async function moverCategoria(id, direccion) {
   try {
     if (hayEmpates) {
       await Promise.all(
-        estado.categorias.map((c, indice) => actualizarCategoria(c.id, { orden: indice + 1 }))
+        estado.categorias.map((c, indice) => api.actualizarCategoria(c.id, { orden: indice + 1 }))
       );
       estado.categorias.forEach((c, indice) => { c.orden = indice + 1; });
     } else {
       const ordenA = a.orden;
       const ordenB = b.orden;
       await Promise.all([
-        actualizarCategoria(a.id, { orden: ordenB }),
-        actualizarCategoria(b.id, { orden: ordenA }),
+        api.actualizarCategoria(a.id, { orden: ordenB }),
+        api.actualizarCategoria(b.id, { orden: ordenA }),
       ]);
       a.orden = ordenB;
       b.orden = ordenA;

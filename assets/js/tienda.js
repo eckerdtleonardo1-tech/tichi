@@ -4,7 +4,6 @@
 
 import { TIENDA, supabaseConfigurado } from './config.js';
 import { traerProductosPublicos, traerCategorias } from './db.js';
-import { PRODUCTOS_DEMO, CATEGORIAS_DEMO } from './demo-data.js';
 import * as carrito from './carrito.js';
 import {
   precioARS, porcentajeDescuento, esc, normalizar, debounce,
@@ -70,7 +69,7 @@ async function cargarCatalogo() {
       );
       return;
     }
-    usarDemo();
+    await usarDemo();
     return;
   }
 
@@ -85,7 +84,7 @@ async function cargarCatalogo() {
     console.error('[catálogo] no se pudo leer Supabase:', error);
     if (TIENDA.demoSiNoHayBaseDeDatos) {
       avisar('No pudimos conectar con la base. Mostrando productos de ejemplo.', 'error');
-      usarDemo();
+      await usarDemo();
       return;
     }
     $('#grilla').innerHTML = bloqueVacio('No pudimos cargar el catálogo', mensajeDeError(error));
@@ -95,16 +94,48 @@ async function cargarCatalogo() {
   terminarCarga();
 }
 
-function usarDemo() {
-  estado.productos = PRODUCTOS_DEMO;
-  estado.categorias = CATEGORIAS_DEMO;
+/**
+ * Modo demostración: lee el catálogo guardado en el navegador, el mismo que
+ * edita el panel. Así, lo que se carga en /admin aparece acá al instante, sin
+ * base de datos.
+ */
+async function usarDemo() {
+  const demo = await import('./demo-db.js');
+  estado.productos = await demo.traerProductosPublicos();
+  estado.categorias = await demo.traerCategorias();
+
   // Con mostrarAvisoDeDemo en false la tienda se ve como una tienda real,
   // sin el cartel que habla de archivos de configuración.
   if (TIENDA.mostrarAvisoDeDemo) {
     $('#aviso-config').hidden = false;
     document.body.classList.add('config-pendiente');
   }
+
+  escucharCambiosDeLaDemo();
   terminarCarga();
+}
+
+/**
+ * Si el panel está abierto en otra pestaña, el navegador avisa cuando cambia el
+ * catálogo. Lo aprovechamos para refrescar la tienda sola: en una demostración
+ * se carga un producto en /admin y aparece acá sin recargar nada.
+ */
+let escuchandoDemo = false;
+
+function escucharCambiosDeLaDemo() {
+  if (escuchandoDemo) return;
+  escuchandoDemo = true;
+
+  window.addEventListener('storage', async (evento) => {
+    if (evento.key !== 'pisl_demo_catalogo_v1') return;
+    const demo = await import('./demo-db.js');
+    estado.productos = await demo.traerProductosPublicos();
+    estado.categorias = await demo.traerCategorias();
+    carrito.sincronizarCon(estado.productos);
+    pintarChips();
+    pintarGrilla();
+    observarApariciones();
+  });
 }
 
 function terminarCarga() {
