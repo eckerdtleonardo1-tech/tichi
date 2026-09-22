@@ -27,6 +27,7 @@ assets/
   js/demo-data.js          12 productos de ejemplo (sólo si falta Supabase)
   img/og.png               Imagen para compartir en WhatsApp / Instagram
   img/favicon.svg          Icono del sitio
+  img/productos/           Las 20 ilustraciones de los productos de ejemplo
 supabase/schema.sql        SQL completo: tablas, RLS, bucket y 12 productos
 vercel.json                Configuración del deploy
 ```
@@ -243,22 +244,38 @@ muestra **12 productos de ejemplo** y un cartel amarillo avisándolo. Sirve para
 el diseño antes de conectar la base. El panel, en cambio, no deja entrar: te dice
 que falta configurar Supabase.
 
-### Para mostrarle la tienda a un cliente
+### El repo viene listo para publicar como demostración
 
-El cartel amarillo menciona archivos de configuración, así que en una demo de
-venta queda mal. Apagalo con:
+`mostrarAvisoDeDemo` ya está en **`false`**, así que si subís esto a Vercel tal
+como está tenés una tienda que se ve y funciona como una tienda real:
 
-```js
-mostrarAvisoDeDemo: false,
-```
+- Los 12 productos con sus fotos
+- Buscador, filtros por categoría y orden por precio
+- Galería de fotos en 7 de los 12 productos
+- Carrito completo y pedido por WhatsApp al número configurado
 
-Con eso la tienda se ve como una tienda real y funciona completa —catálogo,
-buscador, carrito y pedido por WhatsApp— **sin necesidad de base de datos ni de
-una cuenta de Supabase**. Es la forma más rápida de mostrarle el catálogo a alguien:
-subís el repo a Vercel y listo.
+Todo eso **sin base de datos ni cuenta de Supabase**. Es la forma más rápida de
+mostrarle el catálogo a alguien.
 
-Dejalo en `true` mientras la armás, para no creer que ya está conectada a la base
+El panel de `/admin` en este modo avisa que es una demostración y que se activa al
+conectar la base. El mensaje está escrito para que lo pueda leer un cliente.
+
+Si te ponés a desarrollar, pasá `mostrarAvisoDeDemo` a `true`: vuelve el cartel
+amarillo y el mensaje técnico, para no creer que ya está conectada a la base
 cuando en realidad sigue en modo demo.
+
+### Las fotos de los productos de ejemplo
+
+Las 20 imágenes de `assets/img/productos/` son ilustraciones hechas para este
+proyecto, así que podés usarlas en una demo sin problemas de licencia. No son
+fotos de productos reales.
+
+Cuando tengas las fotos de verdad, hay dos caminos:
+
+- **Con la base conectada:** las subís desde el panel y estas dejan de usarse solas.
+- **Sin base, sólo para la demo:** reemplazás los archivos de esa carpeta
+  respetando los nombres, o editás el campo `imagenes` de cada producto en
+  `assets/js/demo-data.js`.
 
 ### Para apagar el modo demo del todo
 
@@ -303,8 +320,17 @@ tiene activado "reducir movimiento".
 ## Preguntas que te van a surgir
 
 **¿Puedo cambiar el número de WhatsApp?**
-Sí, `TIENDA.whatsapp` en `assets/js/config.js`. Formato internacional sin `+` ni
-espacios: `5493329534029`.
+Sí, `TIENDA.whatsapp` en `assets/js/config.js`. Tiene que ir en formato
+internacional, sin `+` ni espacios ni guiones, o el link no abre el chat. Para el
+número 3329-534029 queda así:
+
+```
+54      país (Argentina)
+9       celular
+3329    característica, sin el 0
+534029  número
+= 5493329534029
+```
 
 **¿Puedo agregar otra etiqueta además de Importado / Nuevo / Oferta / Más vendido?**
 Sí, pero son dos lugares: el `<select id="p-etiqueta">` en `admin/index.html` y el

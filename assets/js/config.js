@@ -17,6 +17,14 @@ export const TIENDA = {
   slogan: 'Importados con envío a todo el país',
 
   // Número de WhatsApp en formato internacional, sin + ni espacios.
+  //
+  // El número es 3329-534029. En wa.me hay que escribirlo internacional o el
+  // link no abre el chat:
+  //     54  país (Argentina)
+  //     9   celular
+  //     3329 característica, sin el 0
+  //     534029
+  //   =  5493329534029
   whatsapp: '5493329534029',
 
   // Datos que se muestran en el footer y en las preguntas frecuentes.
@@ -31,11 +39,11 @@ export const TIENDA = {
   demoSiNoHayBaseDeDatos: true,
 
   // El cartel amarillo que avisa "estás viendo productos de ejemplo".
-  // Ponelo en false para MOSTRARLE LA TIENDA A UN CLIENTE: se ve como una
-  // tienda real, sin mencionar archivos de configuración.
-  // Dejalo en true mientras la armás, para no confundirte y creer que ya está
-  // conectada a la base cuando en realidad sigue en modo demo.
-  mostrarAvisoDeDemo: true,
+  // Está en false porque el sitio se publica en modo demostración: se ve como
+  // una tienda real, sin mencionar archivos de configuración.
+  // Ponelo en true si estás desarrollando, para no confundirte y creer que ya
+  // está conectada a la base cuando en realidad sigue en modo demo.
+  mostrarAvisoDeDemo: false,
 };
 
 /** true cuando ya pusiste tus credenciales reales de Supabase. */

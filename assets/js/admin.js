@@ -5,7 +5,7 @@
    y gestión de categorías. Todo pensado para el celular.
    ============================================================================ */
 
-import { supabaseConfigurado, SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
+import { supabaseConfigurado, SUPABASE_URL, SUPABASE_ANON_KEY, TIENDA } from './config.js';
 import {
   cargarCliente, traerTodosLosProductos, traerCategorias,
   crearProducto, actualizarProducto, borrarProducto,
@@ -37,8 +37,13 @@ const estado = {
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!supabaseConfigurado) {
+    // Dos públicos distintos: si el sitio está publicado como demostración, el
+    // mensaje lo puede llegar a leer un cliente; si estás desarrollando, querés
+    // saber exactamente qué archivo completar.
     mostrarErrorLogin(
-      'Todavía no configuraste Supabase. Completá assets/js/config.js con la URL y la anon key de tu proyecto.'
+      TIENDA.mostrarAvisoDeDemo
+        ? 'Todavía no configuraste Supabase. Completá assets/js/config.js con la URL y la anon key de tu proyecto.'
+        : 'Esta es una demostración del catálogo. El panel para cargar productos se activa al conectar la base de datos.'
     );
     $('#login-btn').disabled = true;
     return;
