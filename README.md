@@ -138,21 +138,22 @@ vercel
 
 Cada `git push` a la rama conectada publica una versión nueva sola.
 
-### Después del primer deploy: la imagen para compartir
+### La imagen para compartir
 
-WhatsApp e Instagram necesitan que `og:image` sea una URL **absoluta**. En
-`index.html` está con un dominio de ejemplo — cambialo por el tuyo (3 líneas):
+WhatsApp e Instagram necesitan que `og:image` sea una URL **absoluta**, así que en
+`index.html` está apuntando al dominio del sitio:
 
-```html
-<meta property="og:url"   content="https://TU-DOMINIO.vercel.app/">
-<meta property="og:image" content="https://TU-DOMINIO.vercel.app/assets/img/og.png">
-<meta name="twitter:image" content="https://TU-DOMINIO.vercel.app/assets/img/og.png">
+```
+https://catalogo-imports.vercel.app
 ```
 
-Y el `<link rel="canonical">` unas líneas más abajo.
+Si algún día cambiás de dominio —por ejemplo a uno propio— hay que actualizar
+**cuatro líneas** de `index.html`: `og:url`, `og:image`, `twitter:image` y el
+`<link rel="canonical">`.
 
-> WhatsApp guarda en caché la vista previa de cada link. Si lo compartiste antes de
-> corregir esto, agregale `?v=2` al final del link para forzar la actualización.
+> WhatsApp guarda en caché la vista previa de cada link. Si compartiste el link
+> antes de que la imagen estuviera bien, agregale `?v=2` al final para forzar la
+> actualización.
 
 ---
 
