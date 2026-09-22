@@ -315,6 +315,23 @@ Cuando tengas las fotos de verdad, hay dos caminos:
   respetando los nombres, o editás el campo `imagenes` de cada producto en
   `assets/js/demo-data.js`.
 
+### «Publiqué cambios y sigo viendo lo viejo»
+
+El catálogo de la demostración se guarda en el navegador de quien mira, así que
+hay dos cachés en juego. Las dos están resueltas:
+
+- **El catálogo guardado.** `demo-estado.js` guarda una firma del catálogo de
+  ejemplo. Si cambiás `demo-data.js`, la firma cambia y lo guardado se descarta
+  solo en la próxima visita. Lo que el vendedor haya cargado él se conserva
+  mientras el catálogo de ejemplo no cambie.
+- **Los archivos del sitio.** `vercel.json` manda `max-age=0, must-revalidate`
+  para todo lo que está en `/assets`, así que el navegador siempre pregunta si
+  hay algo nuevo. Cuando la tienda esté estable podés subir ese número para las
+  imágenes y ahorrar datos.
+
+Si igual quedó algo pegado en un teléfono, entrá a `/admin` y tocá
+**«Reiniciar la demo»**: limpia lo guardado y vuelve al catálogo de ejemplo.
+
 ### Para apagar el modo demo del todo
 
 `demoSiNoHayBaseDeDatos: false` en `config.js`. El sitio deja de mostrar ejemplos

@@ -17,8 +17,32 @@ const CLAVE = 'pisl_demo_catalogo_v1';
 /** Copia profunda, para no tocar nunca los datos originales del archivo. */
 const copiar = (valor) => JSON.parse(JSON.stringify(valor));
 
+/**
+ * Firma del catálogo de ejemplo. Cambia en cuanto se toca demo-data.js.
+ *
+ * Es lo que evita el problema de "publiqué cambios y sigo viendo lo viejo":
+ * el navegador de quien ya visitó el sitio tiene el catálogo anterior guardado,
+ * y sin esta comprobación lo seguiría mostrando para siempre. Si la firma
+ * guardada no coincide con la actual, lo guardado se descarta.
+ */
+function firmaDeLaSemilla() {
+  const texto = [
+    ...PRODUCTOS_DEMO.map((p) => `${p.id}:${p.nombre}:${p.precio}:${(p.imagenes ?? []).join(',')}`),
+    ...CATEGORIAS_DEMO.map((c) => `${c.id}:${c.nombre}:${c.orden}`),
+  ].join('|');
+
+  // djb2: alcanza para detectar un cambio y no necesita ninguna librería.
+  let h = 5381;
+  for (let i = 0; i < texto.length; i += 1) h = ((h * 33) ^ texto.charCodeAt(i)) >>> 0;
+  return h.toString(36);
+}
+
 function semilla() {
-  return { productos: copiar(PRODUCTOS_DEMO), categorias: copiar(CATEGORIAS_DEMO) };
+  return {
+    firma: firmaDeLaSemilla(),
+    productos: copiar(PRODUCTOS_DEMO),
+    categorias: copiar(CATEGORIAS_DEMO),
+  };
 }
 
 /** Lee el catálogo de demostración; si no hay nada guardado, usa la semilla. */
@@ -28,6 +52,8 @@ export function leer() {
     if (!crudo) return semilla();
     const datos = JSON.parse(crudo);
     if (!Array.isArray(datos?.productos) || !Array.isArray(datos?.categorias)) return semilla();
+    // El catálogo de ejemplo cambió desde la última visita: se descarta lo guardado.
+    if (datos.firma !== firmaDeLaSemilla()) return semilla();
     return datos;
   } catch {
     // Modo privado, almacenamiento bloqueado o datos corruptos: arrancamos limpio.
@@ -37,7 +63,7 @@ export function leer() {
 
 export function guardar(datos) {
   try {
-    localStorage.setItem(CLAVE, JSON.stringify(datos));
+    localStorage.setItem(CLAVE, JSON.stringify({ ...datos, firma: firmaDeLaSemilla() }));
     return { ok: true };
   } catch (error) {
     const lleno = error?.name === 'QuotaExceededError' || /quota/i.test(error?.message ?? '');
@@ -61,7 +87,9 @@ export function reiniciar() {
 /** true si el visitante ya modificó algo respecto de la semilla. */
 export function fueModificado() {
   try {
-    return localStorage.getItem(CLAVE) !== null;
+    const crudo = localStorage.getItem(CLAVE);
+    if (!crudo) return false;
+    return JSON.parse(crudo)?.firma === firmaDeLaSemilla();
   } catch {
     return false;
   }
