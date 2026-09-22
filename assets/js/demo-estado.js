@@ -50,7 +50,7 @@ export function guardar(datos) {
   }
 }
 
-/** Vuelve a los 12 productos originales. */
+/** Vuelve al catálogo de ejemplo original. */
 export function reiniciar() {
   try {
     localStorage.removeItem(CLAVE);

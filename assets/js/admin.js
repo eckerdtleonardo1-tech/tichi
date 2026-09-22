@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 /**
  * Deja el panel listo para mostrárselo a alguien: pone a la vista las
  * credenciales de la demo (y las precarga, para entrar con un toque), marca la
- * cabecera y habilita el botón que devuelve el catálogo a los 12 productos.
+ * cabecera y habilita el botón que devuelve el catálogo a los productos de ejemplo.
  */
 async function prepararDemo() {
   const { CREDENCIALES_DEMO } = api;
@@ -103,7 +103,7 @@ async function prepararDemo() {
 async function reiniciarDemo() {
   pedirConfirmacion({
     titulo: '¿Reiniciar la demostración?',
-    texto: 'El catálogo vuelve a los 12 productos de ejemplo y se descarta todo lo que hayas cargado o cambiado.',
+    texto: 'El catálogo vuelve a los productos de ejemplo y se descarta todo lo que hayas cargado o cambiado.',
     textoBoton: 'Reiniciar',
     accion: async () => {
       const { reiniciar } = await import('./demo-estado.js');

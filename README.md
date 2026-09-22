@@ -24,13 +24,13 @@ assets/
   js/utils.js              Formato de precios, búsqueda, avisos
   js/tienda.js             Lógica del sitio público
   js/admin.js              Lógica del panel
-  js/demo-data.js          Los 12 productos de ejemplo
+  js/demo-data.js          Los productos de ejemplo, todos con foto real
   js/demo-estado.js        El catálogo de la demo, guardado en el navegador
   js/demo-db.js            Respaldo del panel en modo demo (misma interfaz que db.js)
   img/og.png               Imagen para compartir en WhatsApp / Instagram
   img/favicon.svg          Icono del sitio
   img/productos/           Fotos de los productos de ejemplo (real-*.png son reales)
-supabase/schema.sql        SQL completo: tablas, RLS, bucket y 12 productos
+supabase/schema.sql        SQL completo: tablas, RLS, bucket y productos de ejemplo
 vercel.json                Configuración del deploy
 ```
 
@@ -59,10 +59,10 @@ Eso crea:
   `activo = true`; crear, editar y borrar requiere una sesión iniciada.
 - El bucket de Storage **`productos`** para las fotos, público para lectura y
   escribible sólo por el admin logueado.
-- 4 categorías y **12 productos de ejemplo** (3 por categoría).
+- 4 categorías y **5 productos de ejemplo**, los mismos del modo demostración.
 
 El script se puede volver a ejecutar cuando quieras: las tablas y las políticas se
-recrean sin romper nada, y **los 12 productos de ejemplo se cargan sólo si la tabla
+recrean sin romper nada, y **los productos de ejemplo se cargan sólo si la tabla
 está vacía**, así que no te va a duplicar tu catálogo real.
 
 ### 3. Crear el usuario del vendedor y cerrar el registro
@@ -243,7 +243,7 @@ Detalles que ya están resueltos:
 ## Modo demo
 
 Si `assets/js/config.js` todavía no tiene credenciales reales, el sitio público
-muestra **12 productos de ejemplo** y un cartel amarillo avisándolo. Sirve para ver
+muestra **los productos de ejemplo** y un cartel amarillo avisándolo. Sirve para ver
 el diseño antes de conectar la base. El panel, en cambio, no deja entrar: te dice
 que falta configurar Supabase.
 
@@ -252,9 +252,9 @@ que falta configurar Supabase.
 `mostrarAvisoDeDemo` ya está en **`false`**, así que si subís esto a Vercel tal
 como está tenés una tienda que se ve y funciona como una tienda real:
 
-- Los 12 productos con sus fotos
+- Los 5 productos, todos con foto real
 - Buscador, filtros por categoría y orden por precio
-- Galería de fotos en 7 de los 12 productos
+- Galería de 3 fotos en la funda de silicona
 - Carrito completo y pedido por WhatsApp al número configurado
 
 Todo eso **sin base de datos ni cuenta de Supabase**. Es la forma más rápida de
@@ -272,7 +272,7 @@ borrar, usar los botones rápidos y administrar categorías. Todo real, pero con
 el navegador en lugar de una base de datos: lo que hacés queda en ese dispositivo,
 no viaja a ningún servidor y no afecta a nadie más.
 
-El botón **«Reiniciar la demo»** devuelve el catálogo a los 12 productos
+El botón **«Reiniciar la demo»** devuelve el catálogo a los productos
 originales, para poder repetir la presentación de cero.
 
 Si te ponés a desarrollar, pasá `mostrarAvisoDeDemo` a `true`: vuelve el cartel
@@ -298,15 +298,15 @@ El paso 5 es el que mejor explica el producto: el vendedor carga y se publica.
 
 ### Las fotos de los productos de ejemplo
 
-En `assets/img/productos/` convive todo mezclado:
+Las siete imágenes de `assets/img/productos/` son **fotos reales**, recortadas a
+cuadrado para que entren en la grilla sin que se corte el producto.
 
-- Los archivos **`real-*.png`** son fotos reales de productos, usadas en la funda
-  de silicona y en los dos perfumes.
-- El resto son **ilustraciones** hechas para este proyecto (sin problemas de
-  licencia, pero no son fotos).
+El catálogo de ejemplo tiene sólo cinco productos a propósito: entran únicamente
+los que tienen foto real. Una ilustración al lado de una foto se nota enseguida y
+desluce la demo.
 
-Se nota la diferencia: las fotos reales venden bastante más. Faltan fotos de nueve
-productos, y para mostrarle la demo a alguien conviene reemplazarlas todas.
+Para sumar productos, poné la foto en esa carpeta y agregá la entrada en
+`assets/js/demo-data.js` (o cargalos desde el panel, si ya conectaste la base).
 
 Cuando tengas las fotos de verdad, hay dos caminos:
 

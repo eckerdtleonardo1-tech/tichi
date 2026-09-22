@@ -35,7 +35,7 @@ export const TIENDA = {
   instagramUsuario: '@productosimportadossl',
 
   // Si está en true y Supabase todavía no está configurado, el sitio muestra
-  // 12 productos de ejemplo para que puedas ver el diseño funcionando.
+  // los productos de ejemplo para que puedas ver el diseño funcionando.
   demoSiNoHayBaseDeDatos: true,
 
   // El cartel amarillo que avisa "estás viendo productos de ejemplo".

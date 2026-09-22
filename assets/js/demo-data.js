@@ -1,13 +1,13 @@
 /* ============================================================================
    Datos de demostración
    ----------------------------------------------------------------------------
-   Son exactamente los mismos 12 productos que carga supabase/schema.sql.
+   Los mismos productos que carga supabase/schema.sql. Se usan en el sitio
+   público y en el panel cuando Supabase todavía no está configurado, para poder
+   mostrar la tienda funcionando sin base de datos.
 
-   Las rutas de las fotos arrancan con "/" a propósito: este archivo lo leen
-   tanto la tienda (en /) como el panel (en /admin/), así que una ruta relativa
-   se rompería en uno de los dos.
-   Sólo se usan en el sitio público cuando Supabase todavía no está configurado,
-   para que puedas ver el diseño funcionando antes de conectar la base.
+   Todos tienen foto real. Las rutas arrancan con "/" a propósito: este archivo
+   lo leen tanto la tienda (en /) como el panel (en /admin/), así que una ruta
+   relativa se rompería en uno de los dos.
    ============================================================================ */
 
 export const CATEGORIAS_DEMO = [
@@ -31,18 +31,20 @@ export const PRODUCTOS_DEMO = [
     stock: true, etiqueta: 'Más vendido', destacado: true, activo: true, fecha_creacion: '2026-09-01T10:00:00Z',
   },
   {
-    id: 'p2', nombre: 'Funda transparente antigolpes', categoria: 'Fundas de celular',
-    precio: 9800, precio_anterior: 13900,
-    descripcion: 'Funda rígida transparente con marco reforzado y esquinas con aire. No se pone amarilla y deja ver el color original del celular.',
-    imagenes: ['/assets/img/productos/funda-transparente-1.png', '/assets/img/productos/funda-transparente-2.png'], variantes: ['iPhone 15', 'iPhone 14', 'Samsung A34', 'Samsung A54', 'Xiaomi Redmi Note 13'],
-    stock: true, etiqueta: 'Oferta', destacado: true, activo: true, fecha_creacion: '2026-09-02T10:00:00Z',
+    id: 'p2', nombre: 'Auriculares inalámbricos', categoria: 'Auriculares',
+    precio: 26900, precio_anterior: null,
+    descripcion: 'Estuche con carga y hasta 20 horas de uso. Se conectan solos al abrir el estuche, tienen micrófono para llamadas y controles táctiles.',
+    imagenes: ['/assets/img/productos/real-auriculares-tws.png'],
+    variantes: ['Blanco'],
+    stock: true, etiqueta: 'Más vendido', destacado: true, activo: true, fecha_creacion: '2026-09-04T10:00:00Z',
   },
   {
-    id: 'p3', nombre: 'Funda libro con tarjetero', categoria: 'Fundas de celular',
-    precio: 15900, precio_anterior: null,
-    descripcion: 'Funda tipo libro en eco cuero, con dos espacios para tarjetas y soporte para ver videos. Cierre magnético.',
-    imagenes: ['/assets/img/productos/funda-libro-1.png'], variantes: ['iPhone 14', 'iPhone 13', 'Samsung A54', 'Motorola G54'],
-    stock: true, etiqueta: null, destacado: false, activo: true, fecha_creacion: '2026-09-03T10:00:00Z',
+    id: 'p3', nombre: 'Lattafa Yara', categoria: 'Perfumes',
+    precio: 39900, precio_anterior: null,
+    descripcion: 'Eau de parfum femenino, dulce y floral, de mucha duración. Presentación blanca y dorada, con su caja original. De los más pedidos.',
+    imagenes: ['/assets/img/productos/real-perfume-yara.png'],
+    variantes: ['100 ml'],
+    stock: true, etiqueta: 'Importado', destacado: true, activo: true, fecha_creacion: '2026-09-06T10:00:00Z',
   },
   {
     id: 'p4', nombre: 'Odyssey Mandarin Sky Elixir', categoria: 'Perfumes',
@@ -50,7 +52,7 @@ export const PRODUCTOS_DEMO = [
     descripcion: 'Eau de parfum en edición limitada. Arranca cítrico y se asienta en notas dulces y amaderadas, con mucha duración. Viene con su caja original.',
     imagenes: ['/assets/img/productos/real-perfume-odyssey.png'],
     variantes: ['100 ml'],
-    stock: true, etiqueta: 'Importado', destacado: true, activo: true, fecha_creacion: '2026-09-04T10:00:00Z',
+    stock: true, etiqueta: 'Importado', destacado: false, activo: true, fecha_creacion: '2026-09-08T10:00:00Z',
   },
   {
     id: 'p5', nombre: 'Eclaire', categoria: 'Perfumes',
@@ -58,55 +60,6 @@ export const PRODUCTOS_DEMO = [
     descripcion: 'Perfume femenino dulce, con vainilla, caramelo y un fondo floral suave. Fijación de 6 a 8 horas. De los más elegidos para regalo.',
     imagenes: ['/assets/img/productos/real-perfume-eclaire.png'],
     variantes: ['100 ml'],
-    stock: true, etiqueta: 'Oferta', destacado: false, activo: true, fecha_creacion: '2026-09-05T10:00:00Z',
-  },
-  {
-    id: 'p6', nombre: 'Set de body splash x3', categoria: 'Perfumes',
-    precio: 18500, precio_anterior: null,
-    descripcion: 'Combo de tres body splash de 250 ml con aromas frutales. Rinde muchísimo y se puede usar todos los días.',
-    imagenes: ['/assets/img/productos/body-splash-1.png'], variantes: ['Frutal', 'Cítrico', 'Dulce', 'Combo surtido'],
-    stock: true, etiqueta: 'Nuevo', destacado: false, activo: true, fecha_creacion: '2026-09-06T10:00:00Z',
-  },
-  {
-    id: 'p7', nombre: 'Auriculares inalámbricos TWS', categoria: 'Auriculares',
-    precio: 26900, precio_anterior: null,
-    descripcion: 'Bluetooth 5.3, estuche con carga y hasta 20 horas de uso. Controles táctiles, micrófono para llamadas y conexión automática al abrir el estuche.',
-    imagenes: ['/assets/img/productos/tws-1.png', '/assets/img/productos/tws-2.png'], variantes: ['Negro', 'Blanco'],
-    stock: true, etiqueta: 'Más vendido', destacado: true, activo: true, fecha_creacion: '2026-09-07T10:00:00Z',
-  },
-  {
-    id: 'p8', nombre: 'Auriculares gamer con micrófono', categoria: 'Auriculares',
-    precio: 32500, precio_anterior: 41900,
-    descripcion: 'Vincha acolchada, sonido envolvente y micrófono flexible con cancelación de ruido. Conexión por cable, compatible con PC, PS y celular.',
-    imagenes: ['/assets/img/productos/gamer-1.png', '/assets/img/productos/gamer-2.png'], variantes: ['Negro/Rojo', 'Negro/Azul'],
-    stock: true, etiqueta: 'Oferta', destacado: false, activo: true, fecha_creacion: '2026-09-08T10:00:00Z',
-  },
-  {
-    id: 'p9', nombre: 'Auriculares in-ear con cable', categoria: 'Auriculares',
-    precio: 7900, precio_anterior: null,
-    descripcion: 'Clásicos in-ear con manos libres y control de volumen. Conector 3.5 mm. La opción práctica y económica.',
-    imagenes: ['/assets/img/productos/inear-1.png'], variantes: ['Negro', 'Blanco'],
-    stock: false, etiqueta: null, destacado: false, activo: true, fecha_creacion: '2026-09-09T10:00:00Z',
-  },
-  {
-    id: 'p10', nombre: 'Parlante bluetooth portátil', categoria: 'Importados',
-    precio: 39900, precio_anterior: null,
-    descripcion: 'Parlante compacto resistente a salpicaduras, 10 W reales, luces LED y hasta 8 horas de batería. Entra en la mochila.',
-    imagenes: ['/assets/img/productos/parlante-1.png', '/assets/img/productos/parlante-2.png'], variantes: ['Negro', 'Azul', 'Rojo'],
-    stock: true, etiqueta: 'Importado', destacado: true, activo: true, fecha_creacion: '2026-09-10T10:00:00Z',
-  },
-  {
-    id: 'p11', nombre: 'Smartwatch deportivo', categoria: 'Importados',
-    precio: 45900, precio_anterior: 58900,
-    descripcion: 'Pantalla a color, notificaciones del celular, medición de pasos, ritmo cardíaco y sueño. Incluye dos mallas de regalo.',
-    imagenes: ['/assets/img/productos/smartwatch-1.png', '/assets/img/productos/smartwatch-2.png'], variantes: ['Negro', 'Rosa', 'Plata'],
-    stock: true, etiqueta: 'Oferta', destacado: true, activo: true, fecha_creacion: '2026-09-11T10:00:00Z',
-  },
-  {
-    id: 'p12', nombre: 'Cargador rápido 20W + cable', categoria: 'Importados',
-    precio: 14500, precio_anterior: null,
-    descripcion: 'Cargador con carga rápida y protección contra sobrecarga, más cable reforzado de 1 metro. Elegí el tipo de cable que necesitás.',
-    imagenes: ['/assets/img/productos/cargador-1.png'], variantes: ['Cable Tipo C', 'Cable Lightning', 'Cable Micro USB'],
-    stock: true, etiqueta: 'Nuevo', destacado: false, activo: true, fecha_creacion: '2026-09-12T10:00:00Z',
+    stock: true, etiqueta: 'Oferta', destacado: false, activo: true, fecha_creacion: '2026-09-10T10:00:00Z',
   },
 ];

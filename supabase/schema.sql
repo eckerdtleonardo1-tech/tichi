@@ -183,7 +183,7 @@ create policy productos_storage_delete on storage.objects
     using (bucket_id = 'productos');
 
 -- ----------------------------------------------------------------------------
---  6. Datos de ejemplo: 4 categorías y 12 productos (3 por categoría)
+--  6. Datos de ejemplo: 4 categorías y 5 productos
 --     Las fotos se cargan después desde el panel; por eso imagenes = '{}'
 --     y el sitio muestra un placeholder prolijo mientras tanto.
 --     Los productos se cargan sólo si la tabla está vacía.
@@ -196,7 +196,7 @@ insert into public.categorias (nombre, orden) values
     ('Importados',        4)
 on conflict (nombre) do update set orden = excluded.orden;
 
--- Los 12 productos de ejemplo se cargan SÓLO si la tabla está vacía, así podés
+-- Los productos de ejemplo se cargan SÓLO si la tabla está vacía, así podés
 -- volver a ejecutar este script sobre una tienda ya cargada sin duplicar nada.
 do $seed$
 begin
@@ -207,69 +207,30 @@ else
     insert into public.productos
         (nombre, categoria, precio, precio_anterior, descripcion, variantes, stock, etiqueta, destacado)
     values
-        -- Fundas de celular -------------------------------------------------
         ('Funda silicona premium', 'Fundas de celular', 12500, null,
-         'Funda de silicona con interior de microfibra. Tacto suave, no resbala y protege los bordes de la pantalla. Disponible para los modelos más pedidos.',
-         array['iPhone 15', 'iPhone 14', 'iPhone 13', 'Samsung A54', 'Samsung S23', 'Motorola G84'],
+         'Funda de silicona con interior de microfibra. Tacto suave, no resbala y protege los bordes de la pantalla. Colores disponibles: azul, azul oscuro y rosa.',
+         array['iPhone 12 / 12 Pro', 'iPhone 13 Pro', 'iPhone 15', 'iPhone 15 Pro Max', 'iPhone 16'],
          true, 'Más vendido', true),
 
-        ('Funda transparente antigolpes', 'Fundas de celular', 9800, 13900,
-         'Funda rígida transparente con marco reforzado y esquinas con aire. No se pone amarilla y deja ver el color original del celular.',
-         array['iPhone 15', 'iPhone 14', 'Samsung A34', 'Samsung A54', 'Xiaomi Redmi Note 13'],
-         true, 'Oferta', true),
-
-        ('Funda libro con tarjetero', 'Fundas de celular', 15900, null,
-         'Funda tipo libro en eco cuero, con dos espacios para tarjetas y soporte para ver videos. Cierre magnético.',
-         array['iPhone 14', 'iPhone 13', 'Samsung A54', 'Motorola G54'],
-         true, null, false),
-
-        -- Perfumes ----------------------------------------------------------
-        ('Perfume importado árabe', 'Perfumes', 34900, null,
-         'Fragancia intensa de larga duración, familia oriental amaderada. Ideal para la noche. Producto importado, presentación original con caja.',
-         array['50 ml', '100 ml'],
-         true, 'Importado', true),
-
-        ('Eau de parfum floral', 'Perfumes', 28900, 35900,
-         'Perfume femenino con notas de jazmín, vainilla y pera. Fijación de 6 a 8 horas. Muy elegido para regalo.',
-         array['30 ml', '50 ml', '100 ml'],
-         true, 'Oferta', false),
-
-        ('Set de body splash x3', 'Perfumes', 18500, null,
-         'Combo de tres body splash de 250 ml con aromas frutales. Rinde muchísimo y se puede usar todos los días.',
-         array['Frutal', 'Cítrico', 'Dulce', 'Combo surtido'],
-         true, 'Nuevo', false),
-
-        -- Auriculares -------------------------------------------------------
-        ('Auriculares inalámbricos TWS', 'Auriculares', 26900, null,
-         'Bluetooth 5.3, estuche con carga y hasta 20 horas de uso.Controles táctiles, micrófono para llamadas y conexión automática al abrir el estuche.',
-         array['Negro', 'Blanco'],
+        ('Auriculares inalámbricos', 'Auriculares', 26900, null,
+         'Estuche con carga y hasta 20 horas de uso. Se conectan solos al abrir el estuche, tienen micrófono para llamadas y controles táctiles.',
+         array['Blanco'],
          true, 'Más vendido', true),
 
-        ('Auriculares gamer con micrófono', 'Auriculares', 32500, 41900,
-         'Vincha acolchada, sonido envolvente y micrófono flexible con cancelación de ruido. Conexión por cable, compatible con PC, PS y celular.',
-         array['Negro/Rojo', 'Negro/Azul'],
-         true, 'Oferta', false),
-
-        ('Auriculares in-ear con cable', 'Auriculares', 7900, null,
-         'Clásicos in-ear con manos libres y control de volumen. Conector 3.5 mm. La opción práctica y económica.',
-         array['Negro', 'Blanco'],
-         false, null, false),
-
-        -- Importados --------------------------------------------------------
-        ('Parlante bluetooth portátil', 'Importados', 39900, null,
-         'Parlante compacto resistente a salpicaduras, 10 W reales, luces LED y hasta 8 horas de batería. Entra en la mochila.',
-         array['Negro', 'Azul', 'Rojo'],
+        ('Lattafa Yara', 'Perfumes', 39900, null,
+         'Eau de parfum femenino, dulce y floral, de mucha duración. Presentación blanca y dorada, con su caja original.',
+         array['100 ml'],
          true, 'Importado', true),
 
-        ('Smartwatch deportivo', 'Importados', 45900, 58900,
-         'Pantalla a color, notificaciones del celular, medición de pasos, ritmo cardíaco y sueño. Incluye dos mallas de regalo.',
-         array['Negro', 'Rosa', 'Plata'],
-         true, 'Oferta', true),
+        ('Odyssey Mandarin Sky Elixir', 'Perfumes', 34900, null,
+         'Eau de parfum en edición limitada. Arranca cítrico y se asienta en notas dulces y amaderadas, con mucha duración.',
+         array['100 ml'],
+         true, 'Importado', false),
 
-        ('Cargador rápido 20W + cable', 'Importados', 14500, null,
-         'Cargador con carga rápida y protección contra sobrecarga, más cable reforzado de 1 metro. Elegí el tipo de cable que necesitás.',
-         array['Cable Tipo C', 'Cable Lightning', 'Cable Micro USB'],
-         true, 'Nuevo', false);
+        ('Eclaire', 'Perfumes', 28900, 35900,
+         'Perfume femenino dulce, con vainilla, caramelo y un fondo floral suave. Fijación de 6 a 8 horas.',
+         array['100 ml'],
+         true, 'Oferta', false);
 
 end if;
 end $seed$;
