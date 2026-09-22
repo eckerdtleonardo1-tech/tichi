@@ -161,6 +161,12 @@ La tienda está pensada para que el dueño la maneje sin tocar código: carga lo
 productos desde el panel y los cambios se ven en el momento. Igual hay tres
 decisiones que conviene resolver **antes** de entregarla.
 
+**El plan gratuito de Supabase permite 2 proyectos activos**, contados en todas las
+organizaciones donde seas dueño o administrador. Los **pausados no cuentan**, así que
+si te quedás sin cupo podés pausar uno que no uses y se libera el lugar. De todos
+modos, lo que corresponde es que el proyecto de la tienda esté en la cuenta del
+cliente, no en la tuya, y así tu cupo no entra en juego.
+
 **Las cuentas tienen que ser del cliente.** Si el proyecto de Supabase y el de
 Vercel quedan a tu nombre, cada cambio de contraseña, cada factura y cada
 problema pasa por vos para siempre. Lo más limpio es crear los dos proyectos con
@@ -237,7 +243,27 @@ muestra **12 productos de ejemplo** y un cartel amarillo avisándolo. Sirve para
 el diseño antes de conectar la base. El panel, en cambio, no deja entrar: te dice
 que falta configurar Supabase.
 
-Para apagar el modo demo, poné `demoSiNoHayBaseDeDatos: false` en `config.js`.
+### Para mostrarle la tienda a un cliente
+
+El cartel amarillo menciona archivos de configuración, así que en una demo de
+venta queda mal. Apagalo con:
+
+```js
+mostrarAvisoDeDemo: false,
+```
+
+Con eso la tienda se ve como una tienda real y funciona completa —catálogo,
+buscador, carrito y pedido por WhatsApp— **sin necesidad de base de datos ni de
+una cuenta de Supabase**. Es la forma más rápida de mostrarle el catálogo a alguien:
+subís el repo a Vercel y listo.
+
+Dejalo en `true` mientras la armás, para no creer que ya está conectada a la base
+cuando en realidad sigue en modo demo.
+
+### Para apagar el modo demo del todo
+
+`demoSiNoHayBaseDeDatos: false` en `config.js`. El sitio deja de mostrar ejemplos
+y avisa que falta configurar la base.
 
 ---
 

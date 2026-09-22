@@ -29,6 +29,13 @@ export const TIENDA = {
   // Si está en true y Supabase todavía no está configurado, el sitio muestra
   // 12 productos de ejemplo para que puedas ver el diseño funcionando.
   demoSiNoHayBaseDeDatos: true,
+
+  // El cartel amarillo que avisa "estás viendo productos de ejemplo".
+  // Ponelo en false para MOSTRARLE LA TIENDA A UN CLIENTE: se ve como una
+  // tienda real, sin mencionar archivos de configuración.
+  // Dejalo en true mientras la armás, para no confundirte y creer que ya está
+  // conectada a la base cuando en realidad sigue en modo demo.
+  mostrarAvisoDeDemo: true,
 };
 
 /** true cuando ya pusiste tus credenciales reales de Supabase. */

@@ -98,9 +98,12 @@ async function cargarCatalogo() {
 function usarDemo() {
   estado.productos = PRODUCTOS_DEMO;
   estado.categorias = CATEGORIAS_DEMO;
-  const aviso = $('#aviso-config');
-  aviso.hidden = false;
-  document.body.classList.add('config-pendiente');
+  // Con mostrarAvisoDeDemo en false la tienda se ve como una tienda real,
+  // sin el cartel que habla de archivos de configuración.
+  if (TIENDA.mostrarAvisoDeDemo) {
+    $('#aviso-config').hidden = false;
+    document.body.classList.add('config-pendiente');
+  }
   terminarCarga();
 }
 
