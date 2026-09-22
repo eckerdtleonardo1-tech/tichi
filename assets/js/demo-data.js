@@ -21,8 +21,13 @@ export const PRODUCTOS_DEMO = [
   {
     id: 'p1', nombre: 'Funda silicona premium', categoria: 'Fundas de celular',
     precio: 12500, precio_anterior: null,
-    descripcion: 'Funda de silicona con interior de microfibra. Tacto suave, no resbala y protege los bordes de la pantalla. Disponible para los modelos más pedidos.',
-    imagenes: ['/assets/img/productos/funda-silicona-1.png', '/assets/img/productos/funda-silicona-2.png', '/assets/img/productos/funda-silicona-3.png'], variantes: ['iPhone 15', 'iPhone 14', 'iPhone 13', 'Samsung A54', 'Samsung S23', 'Motorola G84'],
+    descripcion: 'Funda de silicona con interior de microfibra. Tacto suave, no resbala y protege los bordes de la pantalla. Colores disponibles: azul, azul oscuro y rosa. Decinos el modelo y el color por WhatsApp.',
+    imagenes: [
+      '/assets/img/productos/real-funda-azul.png',
+      '/assets/img/productos/real-funda-azul-oscuro.png',
+      '/assets/img/productos/real-funda-rosa.png',
+    ],
+    variantes: ['iPhone 12 / 12 Pro', 'iPhone 13 Pro', 'iPhone 15', 'iPhone 15 Pro Max', 'iPhone 16'],
     stock: true, etiqueta: 'Más vendido', destacado: true, activo: true, fecha_creacion: '2026-09-01T10:00:00Z',
   },
   {
@@ -40,17 +45,19 @@ export const PRODUCTOS_DEMO = [
     stock: true, etiqueta: null, destacado: false, activo: true, fecha_creacion: '2026-09-03T10:00:00Z',
   },
   {
-    id: 'p4', nombre: 'Perfume importado árabe', categoria: 'Perfumes',
+    id: 'p4', nombre: 'Odyssey Mandarin Sky Elixir', categoria: 'Perfumes',
     precio: 34900, precio_anterior: null,
-    descripcion: 'Fragancia intensa de larga duración, familia oriental amaderada. Ideal para la noche. Producto importado, presentación original con caja.',
-    imagenes: ['/assets/img/productos/perfume-arabe-1.png', '/assets/img/productos/perfume-arabe-2.png'], variantes: ['50 ml', '100 ml'],
+    descripcion: 'Eau de parfum en edición limitada. Arranca cítrico y se asienta en notas dulces y amaderadas, con mucha duración. Viene con su caja original.',
+    imagenes: ['/assets/img/productos/real-perfume-odyssey.png'],
+    variantes: ['100 ml'],
     stock: true, etiqueta: 'Importado', destacado: true, activo: true, fecha_creacion: '2026-09-04T10:00:00Z',
   },
   {
-    id: 'p5', nombre: 'Eau de parfum floral', categoria: 'Perfumes',
+    id: 'p5', nombre: 'Eclaire', categoria: 'Perfumes',
     precio: 28900, precio_anterior: 35900,
-    descripcion: 'Perfume femenino con notas de jazmín, vainilla y pera. Fijación de 6 a 8 horas. Muy elegido para regalo.',
-    imagenes: ['/assets/img/productos/perfume-floral-1.png'], variantes: ['30 ml', '50 ml', '100 ml'],
+    descripcion: 'Perfume femenino dulce, con vainilla, caramelo y un fondo floral suave. Fijación de 6 a 8 horas. De los más elegidos para regalo.',
+    imagenes: ['/assets/img/productos/real-perfume-eclaire.png'],
+    variantes: ['100 ml'],
     stock: true, etiqueta: 'Oferta', destacado: false, activo: true, fecha_creacion: '2026-09-05T10:00:00Z',
   },
   {

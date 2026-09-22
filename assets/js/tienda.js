@@ -264,8 +264,9 @@ function tarjetaProducto(p) {
     etiquetas.push(`<span class="etiqueta etiqueta--oferta">-${descuento}%</span>`);
   }
 
-  const variantes = (p.variantes ?? []).length
-    ? `<p class="tarjeta__variantes">${p.variantes.length} ${p.variantes.length === 1 ? 'opción' : 'opciones'} disponibles</p>`
+  // Con una sola variante el dato no aporta nada, así que no se muestra.
+  const variantes = (p.variantes ?? []).length > 1
+    ? `<p class="tarjeta__variantes">${p.variantes.length} opciones disponibles</p>`
     : '';
 
   const accion = p.stock

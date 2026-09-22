@@ -29,7 +29,7 @@ assets/
   js/demo-db.js            Respaldo del panel en modo demo (misma interfaz que db.js)
   img/og.png               Imagen para compartir en WhatsApp / Instagram
   img/favicon.svg          Icono del sitio
-  img/productos/           Las 20 ilustraciones de los productos de ejemplo
+  img/productos/           Fotos de los productos de ejemplo (real-*.png son reales)
 supabase/schema.sql        SQL completo: tablas, RLS, bucket y 12 productos
 vercel.json                Configuración del deploy
 ```
@@ -298,9 +298,15 @@ El paso 5 es el que mejor explica el producto: el vendedor carga y se publica.
 
 ### Las fotos de los productos de ejemplo
 
-Las 20 imágenes de `assets/img/productos/` son ilustraciones hechas para este
-proyecto, así que podés usarlas en una demo sin problemas de licencia. No son
-fotos de productos reales.
+En `assets/img/productos/` convive todo mezclado:
+
+- Los archivos **`real-*.png`** son fotos reales de productos, usadas en la funda
+  de silicona y en los dos perfumes.
+- El resto son **ilustraciones** hechas para este proyecto (sin problemas de
+  licencia, pero no son fotos).
+
+Se nota la diferencia: las fotos reales venden bastante más. Faltan fotos de nueve
+productos, y para mostrarle la demo a alguien conviene reemplazarlas todas.
 
 Cuando tengas las fotos de verdad, hay dos caminos:
 
